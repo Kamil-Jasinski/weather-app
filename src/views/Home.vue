@@ -1,8 +1,8 @@
 <template>
   <div class="home">
     <AddCity />
-    <ShortDetails :citys="data" />
-    <Widget />
+    <ShortDetails />
+    <Widget :city="response" />
   </div>
 </template>
 
@@ -21,18 +21,50 @@ import Widget from "@/components/Widget.vue"; // @ is an alias to /src
   },
 })
 export default class Home extends Vue {
-  data = [
-    {
-      id: 1,
-      city: "Rzeszów",
-      temp: 2,
-    },
-    {
-      id: 2,
-      city: "Lublin",
-      temp: 18,
-    },
-  ];
+  response = {
+    message: "accurate",
+    cod: "200",
+    count: 1,
+    list: [
+      {
+        id: 2643743,
+        name: "London",
+        coord: {
+          lat: 51.5085,
+          lon: -0.1257,
+        },
+        main: {
+          temp: 11.39,
+          feels_like: 5.64,
+          temp_min: 10.56,
+          temp_max: 12.22,
+          pressure: 1020,
+          humidity: 66,
+        },
+        dt: 1616666980,
+        wind: {
+          speed: 6.69,
+          deg: 240,
+        },
+        sys: {
+          country: "GB",
+        },
+        rain: null,
+        snow: null,
+        clouds: {
+          all: 40,
+        },
+        weather: [
+          {
+            id: 802,
+            main: "Clouds",
+            description: "rozproszone chmury",
+            icon: "03d",
+          },
+        ],
+      },
+    ],
+  };
 
   get apiKey() {
     return this.$store.state.apiKey;

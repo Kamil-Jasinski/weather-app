@@ -21,49 +21,49 @@
         >
           <slide>
             <div class="city-card">
-              <img src="@/assets/placeholder-img-150-200.jpg" alt="" />
+              <img src="https://picsum.photos/150/200?random=1.webp" alt="" />
               <p>City, Country</p>
             </div>
           </slide>
 
           <slide>
             <div class="city-card">
-              <img src="@/assets/placeholder-img-150-200.jpg" alt="" />
+              <img src="https://picsum.photos/150/200?random=2.webp" alt="" />
               <p>City, Country</p>
             </div>
           </slide>
 
           <slide>
             <div class="city-card">
-              <img src="@/assets/placeholder-img-150-200.jpg" alt="" />
+              <img src="https://picsum.photos/150/200?random=3.webp" alt="" />
               <p>City, Country</p>
             </div>
           </slide>
 
           <slide>
             <div class="city-card">
-              <img src="@/assets/placeholder-img-150-200.jpg" alt="" />
+              <img src="https://picsum.photos/150/200?random=4.webp" alt="" />
               <p>City, Country</p>
             </div>
           </slide>
 
           <slide>
             <div class="city-card">
-              <img src="@/assets/placeholder-img-150-200.jpg" alt="" />
+              <img src="https://picsum.photos/150/200?random=5.webp" alt="" />
               <p>City, Country</p>
             </div>
           </slide>
 
           <slide>
             <div class="city-card">
-              <img src="@/assets/placeholder-img-150-200.jpg" alt="" />
+              <img src="https://picsum.photos/150/200?random=6.webp" alt="" />
               <p>City, Country</p>
             </div>
           </slide>
 
           <slide>
             <div class="city-card">
-              <img src="@/assets/placeholder-img-150-200.jpg" alt="" />
+              <img src="https://picsum.photos/150/200?random=7.webp" alt="" />
               <p>City, Country</p>
             </div>
           </slide>
@@ -74,7 +74,7 @@
 </template>
 
 <script lang="ts">
-import { Component, Prop, Vue, Watch } from "vue-property-decorator";
+import { Component, Vue } from "vue-property-decorator";
 import { Carousel, Slide } from "vue-carousel";
 
 @Component({
@@ -100,22 +100,15 @@ $main-app-color-hover: #1a1e69;
 
   display: grid;
   grid-template-columns: repeat(8, 1fr);
-  grid-template-rows: repeat(auto, 1fr);
-  grid-template-columns: repeat(auto-fit, 1fr);
+  grid-template-rows: repeat(8, 1fr);
   align-content: center;
   justify-items: center;
-  grid-template-areas:
-    "AddCForm AddCForm AddCForm AddCForm AddCForm AddCForm AddCForm AddCForm"
-    "AddCForm AddCForm AddCForm AddCForm AddCForm AddCForm AddCForm AddCForm"
-    "sForecast sForecast sForecast sForecast sForecast sForecast sForecast sForecast"
-    "sForecast sForecast sForecast sForecast sForecast sForecast sForecast sForecast"
-    "sForecast sForecast sForecast sForecast sForecast sForecast sForecast sForecast"
-    "sForecast sForecast sForecast sForecast sForecast sForecast sForecast sForecast"
-    "sForecast sForecast sForecast sForecast sForecast sForecast sForecast sForecast"
-    "sForecast sForecast sForecast sForecast sForecast sForecast sForecast sForecast";
 
   .add-city-form {
-    grid-area: AddCForm;
+    //self grid positioning
+    grid-column: 1/-1;
+    grid-row: 1 / 3;
+
     display: flex;
     justify-content: center;
     align-items: center;
@@ -141,31 +134,41 @@ $main-app-color-hover: #1a1e69;
   }
 
   .saved-forecast {
-    grid-area: sForecast;
+    //self grid positioning
+    grid-column: 1/-1;
+    grid-row: 3 / -1;
 
     display: grid;
     grid-template-rows: repeat(4, 1fr);
-    grid-template-areas:
-      "forecast-title"
-      "cards"
-      "cards"
-      "cards";
+
     .forecast {
-      grid-area: forecast-title;
+      //self grid positioning
+      grid-column: 1/-1;
+      grid-row: 1 / 2;
 
       display: flex;
       justify-content: center;
       align-items: center;
     }
     .cards {
-      grid-area: cards;
+      //self grid positioning
+      grid-column: 1/-1;
+      grid-row: 2 / -1;
 
       overflow: hidden;
 
       .city-card {
-        height: 100%;
-        // background-color: #333;
-        grid-area: city-card;
+        background-color: $main-app-color;
+        border-radius: 25px;
+        color: #fff;
+        margin: 0 5px;
+        padding: 10px 0;
+        position: relative;
+        &:hover {
+          background-color: $main-app-color-hover;
+          cursor: pointer;
+        }
+
         img {
           max-height: 150px;
           max-width: 200px;

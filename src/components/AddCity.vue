@@ -96,7 +96,7 @@ $main-app-color-hover: #1a1e69;
 .addCity {
   grid-area: addCity;
   color: $main-app-color;
-  border-bottom: 1px solid $main-app-color;
+  // border-bottom: 1px solid $main-app-color;
 
   display: grid;
   grid-template-columns: repeat(8, 1fr);

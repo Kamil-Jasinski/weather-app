@@ -7,7 +7,6 @@
             :src="currentCityWidgetIconUrl"
             :alt="currentCityWidgetIconAlt"
           />
-          <!-- <font-awesome-icon icon="sun" /> -->
         </span>
         <span class="current-date">
           <span class="__current-day">{{ currentCityDay }}</span>
@@ -23,14 +22,14 @@
             >Feels like {{ feelsLikeTemp }} &deg;C</span
           >
           <div class="__dot-separator"><font-awesome-icon icon="circle" /></div>
-          <span class="short-info">{{ currentCityShortInfo }}</span>
+          <span class="short-info"> Sunset {{ sunsetTime }}</span>
         </div>
       </div>
     </div>
     <!-- <button @click="mainWidgetColor = 'red'">dfhsdf</button> -->
-    <!-- <button @click="log">Log</button> -->
+    <button @click="log">Log</button>
     <div class="weatcher-chart">
-      <TheChart class="chart-wrapper" />
+      <TheChart :chartData="weeklyData" class="chart-wrapper" />
     </div>
   </div>
 </template>
@@ -45,27 +44,30 @@ import TheChart from "@/components/TheChart.vue";
   },
 })
 export default class Widget extends Vue {
-  @Prop() city: any; //Here will be one city object - currently selected
+  @Prop() weeklyData: any; //Here will be whole week response for city
+  @Prop() cityTimeZone: any; //Here will be one city name(timezone) Europe/London - currently selected
+  @Prop() currCity: any; //Here will be one city object - currently selected
+
   mainWidgetColor = "#0f113d";
 
   get currentCity() {
-    return this.city.list[0];
+    return this.currCity;
   }
 
   get cityName() {
-    return this.currentCity.name;
+    return this.cityTimeZone;
   }
 
   get cityCountry() {
-    return this.currentCity.sys.country;
+    return "placeholder";
   }
 
   get currentTemp() {
-    return this.currentCity.main.temp.toFixed(0);
+    return this.currentCity.temp.toFixed(0);
   }
 
   get feelsLikeTemp() {
-    return this.currentCity.main.feels_like.toFixed(0);
+    return this.currentCity.feels_like.toFixed(0);
   }
 
   get currentCityWidgetIconUrl() {
@@ -80,12 +82,22 @@ export default class Widget extends Vue {
 
     return iconAlt;
   }
-  get currentCityShortInfo() {
-    const description = this.currentCity.weather[0].description;
-    const descriptionCapitalized =
-      description.charAt(0).toUpperCase() + description.slice(1);
 
-    return descriptionCapitalized;
+  get sunsetTime() {
+    const d = new Date(this.currentCity.dt * 1000); // to get the DateTime.
+    let hour = d.getHours();
+    let minute = d.getMinutes();
+
+    if (hour < 10) {
+      hour = `0${hour}`;
+    }
+    if (minute < 10) {
+      minute = `0${minute}`;
+    }
+
+    const sunsetTime = `${hour} : ${minute}`;
+
+    return sunsetTime;
   }
 
   get currentCityDate() {
@@ -121,30 +133,40 @@ export default class Widget extends Vue {
   }
 
   get currentCityDay() {
-    const selectFromDays = [
-      "Sunday",
-      "Monday",
-      "Tuesday",
-      "Wednesday",
-      "Thursday",
-      "Friday",
-      "Saturday",
-    ];
-    const d = new Date(this.currentCity.dt * 1000); // to get the DateTime.
-    const dayNumber = d.getDay();
-    const dayName = selectFromDays[dayNumber]; // It will give day index, and based on index we can get day name from the array.
+    // const selectFromDays = [
+    //   "Sunday",
+    //   "Monday",
+    //   "Tuesday",
+    //   "Wednesday",
+    //   "Thursday",
+    //   "Friday",
+    //   "Saturday",
+    // ];
+    // const d = new Date(this.currentCity.dt * 1000); // to get the DateTime.
+    // const dayNumber = d.getDay();
+    // const dayName = selectFromDays[dayNumber]; // It will give day index, and based on index we can get day name from the array.
+    // const currCityDay = `${dayNumber}  ${dayName}`;
+    // return currCityDay;
+    // const day = new Date(this.currentCity.dt).toLocaleDateString("en-US", {
+    //   weekday: "long",
+    //   day: "numeric",
+    // });
 
-    const currCityDay = `${dayNumber}  ${dayName}`;
+    const options = {
+      weekday: "long",
+      day: "numeric",
+    };
+    const today = new Date(this.currentCity.dt * 1000).toLocaleDateString(
+      "en-US",
+      options
+    );
 
-    return currCityDay;
+    return today;
   }
 
   log() {
-    const description = this.currentCity.weather[0].description;
-    const descriptionCapitalized =
-      description.charAt(0).toUpperCase() + description.slice(1);
-
-    console.log(descriptionCapitalized);
+    // console.log(this.weeklyData);
+    //console.log(day.toLocaleDateString("en-EN", options));
   }
 } //class
 </script>

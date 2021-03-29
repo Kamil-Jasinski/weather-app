@@ -7,7 +7,7 @@
         </div>
         <div class="rainChance">Rain Chance</div>
         <div class="ico">
-          Icon
+          Clouds
         </div>
         <div class="temp">Day &deg;C</div>
       </li>
@@ -22,7 +22,13 @@
         </div>
         <div class="rainChance">{{ weekDayRainChance(index) }}</div>
         <div class="ico">
-          <img :src="weekDayIconUrl(index)" :alt="weekDayIconAlt(index)" />
+          <span class="img-container">
+            <img :src="weekDayIconUrl(index)" :alt="weekDayIconAlt(index)" />
+            <div class="__description">
+              {{ weekDayIconAlt(index) }}
+            </div>
+          </span>
+          <img />
         </div>
         <div class="temp">{{ weekDayTemp(index) }}&deg;C</div>
       </li>
@@ -32,63 +38,63 @@
 </template>
 
 <script lang="ts">
-import { Component, Prop, Vue } from "vue-property-decorator";
+import { Component, Prop, Vue } from 'vue-property-decorator';
 
 @Component
 export default class ShortDetails extends Vue {
   @Prop() week: any; //Here will be one city object - currently selected
 
-  weekDayName(index) {
-    const options = {
-      weekday: "long",
+  weekDayName(index: number): string {
+    const options: Record<string, unknown> = {
+      weekday: 'long',
     };
     const dayName = new Date(this.week[index].dt * 1000).toLocaleDateString(
-      "en-US",
+      'en-US',
       options
     );
 
     return dayName;
   }
 
-  weekDayKey(day) {
+  weekDayKey(day: Record<string, any>): string {
     const dayId = `${day.weather[0].id}-${day.dt}`;
     // console.log(dayId);
 
     return dayId;
   }
 
-  weekDayTemp(index) {
+  weekDayTemp(index: number): number {
     const dayTemp = this.week[index].temp.day;
 
     return dayTemp;
   }
 
-  weekDayRainChance(index) {
+  weekDayRainChance(index: number): string {
     const rainChance = this.week[index].rain;
 
-    return rainChance ? `${rainChance}%` : "-";
+    return rainChance ? `${rainChance}%` : '-';
   }
 
-  weekNightTemp(index) {
+  weekNightTemp(index: number): Array<number> {
     const nightTemp = this.week[index].temp.night;
 
     return nightTemp;
   }
 
-  weekDayIconUrl(index) {
+  weekDayIconUrl(index: number): string {
     const iconCode = this.week[index].weather[0].icon;
     const iconURL = `http://openweathermap.org/img/wn/${iconCode}.png`;
 
     return iconURL;
   }
 
-  weekDayIconAlt(index) {
+  weekDayIconAlt(index: number): string {
     const iconAlt = this.week[index].weather[0].description;
 
     return iconAlt;
   }
 
-  log() {
+  log(): void {
     const response = this.week;
 
     console.log(response);
@@ -98,18 +104,11 @@ export default class ShortDetails extends Vue {
 
 <!-- Add "scoped" attribute to limit CSS to this component only -->
 <style lang="scss" scoped>
-@mixin columnCell() {
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  flex-direction: column;
-}
-@mixin rowCell() {
-  padding: 10px 0;
-}
-
 .shortDetails {
   grid-area: shortDetails;
+  grid-row: 8/-1;
+  grid-column: 1/6;
+
   height: 100%;
   overflow: auto;
 
@@ -120,7 +119,7 @@ export default class ShortDetails extends Vue {
     display: flex;
     flex-direction: column;
     min-width: 100%;
-    min-height: 100%;
+    margin: auto auto;
 
     .day-info-wrapper {
       display: flex;
@@ -136,11 +135,12 @@ export default class ShortDetails extends Vue {
         justify-content: center;
         align-items: center;
         width: 25%;
+        height: 100%;
       }
       .day {
         padding: 10px;
         border-radius: 10px;
-        background-color: hsla(237, 60%, 26%, 1);
+        background-color: #4834d4;
         color: #fff;
       }
       .__title {
@@ -149,9 +149,39 @@ export default class ShortDetails extends Vue {
       }
 
       .ico {
-        img {
-          background-color: hsla(237, 60%, 26%, 1);
-          border-radius: 10px;
+        height: 100%;
+        width: 50%;
+        .img-container {
+          position: relative;
+          &:hover {
+            .__description {
+              display: flex;
+            }
+          }
+          img {
+            background-color: #686de0;
+            border-radius: 10px;
+            height: 100%;
+          }
+          .__description {
+            position: absolute;
+            top: 0;
+            right: -10%;
+
+            display: none;
+            justify-content: center;
+            align-items: center;
+            height: 90%;
+            padding: 10px;
+            background-color: #f2cab9;
+
+            border-radius: 10px 2px;
+            color: #686de0;
+            transform: translateX(100%);
+            white-space: nowrap;
+            font-weight: bold;
+            // text-transform: uppercase;
+          }
         }
       }
     }
@@ -159,60 +189,9 @@ export default class ShortDetails extends Vue {
     .__titles {
       border-bottom: 1px solid #0f113d;
       margin-bottom: 10px;
+      font-weight: bold;
+      font-size: 1.2em;
     }
   }
-
-  // .details {
-  //   font-size: 1.2rem;
-  //   height: 100%;
-  //   display: grid;
-  //   grid-template-columns: 2fr 1fr 1fr 1fr;
-  //   // grid-template-rows: 1fr;
-  //   grid-template-areas: "days rainCh wIcons temp";
-
-  //   .days {
-  //     grid-area: days;
-
-  //     @include columnCell();
-
-  //     .day {
-  //       @include rowCell();
-  //     }
-  //   }
-
-  //   .raining-chance {
-  //     grid-area: rainCh;
-  //     @include columnCell();
-  //     .rChance {
-  //       @include rowCell();
-  //     }
-  //   }
-
-  //   .weather-icons {
-  //     grid-area: wIcons;
-  //     @include columnCell();
-  //     .weatcherIcon {
-  //       // @include rowCell();
-  //       display: flex;
-  //       flex-direction: column;
-  //       justify-content: center;
-  //       align-items: center;
-
-  //       margin: 1px 0;
-  //       background-color: rgb(80, 15, 124);
-  //       img {
-  //         max-height: 2rem;
-  //       }
-  //     }
-  //   }
-
-  //   .temperatures {
-  //     grid-area: temp;
-  //     @include columnCell();
-  //     .temperature {
-  //       @include rowCell();
-  //     }
-  //   }
-  // }
 }
 </style>

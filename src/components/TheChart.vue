@@ -1,9 +1,9 @@
 <script>
-import { Bar } from "vue-chartjs";
+import { Bar } from 'vue-chartjs';
 
 export default {
   extends: Bar,
-  props: ["chartData"],
+  props: ['chartData'],
   data() {
     return {
       datacollection: null,
@@ -14,11 +14,11 @@ export default {
             {
               ticks: {
                 beginAtZero: true,
-                fontColor: "#ffffff75",
+                fontColor: '#ffffff75',
               },
               gridLines: {
                 display: true,
-                color: "#ffffff25",
+                color: '#ffffff25',
               },
             },
           ],
@@ -26,7 +26,7 @@ export default {
             {
               ticks: {
                 beginAtZero: true,
-                fontColor: "#ffffff75",
+                fontColor: '#ffffff75',
               },
               gridLines: {
                 display: false,
@@ -37,7 +37,7 @@ export default {
         legend: {
           display: true,
           labels: {
-            fontColor: "#FFF",
+            fontColor: '#FFF',
           },
         },
         responsive: true,
@@ -51,47 +51,59 @@ export default {
       //Props data
       const initData = this.chartData;
       //Arrays where data gonna be pushed
-      let datasetsArray = [];
+      let dayTempArray = [];
+      let nightTempArray = [];
       let labelsArray = [];
 
       initData.forEach((el) => {
-        //Add single item to datasetsArray
-        const temp = parseInt(el.temp.day.toFixed(0));
-        datasetsArray.push(temp);
+        //Add single item to dayTempArray - day-temp
+        const dayTemp = parseInt(el.temp.day.toFixed(0));
+        dayTempArray.push(dayTemp);
+
+        //Add single item to dayTempArray - day-temp
+        const nightTemp = parseInt(el.temp.night.toFixed(0));
+        nightTempArray.push(nightTemp);
 
         //Add single item (label) to labelsArray
-        // const options = { weekday: "long" };
-        // const dayName = new Date(this.week[index].dt * 1000).toLocaleDateString(
-        //   "en-US",
-        //   options
-        // );
+        const label = el.dt;
+        const options = {
+          weekday: 'long',
+          day: 'numeric',
+        };
+        const dayName = new Date(label * 1000).toLocaleDateString(
+          'en-US',
+          options
+        );
+        labelsArray.push(dayName);
       });
 
-      this.setDataCollection(datasetsArray);
+      this.setDataCollection(dayTempArray, nightTempArray, labelsArray);
     },
 
-    setDataCollection(datasets) {
+    setDataCollection(dayTempArray, nightTempArray, labelsArray) {
       this.datacollection = {
         //Data to be represented on x-axis
-        labels: [
-          "Sunday",
-          "Monday",
-          "Tuesday",
-          "Wednesday",
-          "Thursday",
-          "Friday",
-          "Saturday",
-        ],
+        labels: labelsArray,
         datasets: [
           {
             barPercentage: 0.4,
-            label: "Raining Chance",
-            backgroundColor: "#fcba03",
+            label: 'Day Temperature',
+            backgroundColor: '#eb4d4b',
             borderWidth: 2,
-            borderColor: "#ffbb00",
-            color: "#FFF",
+            borderColor: '#ff7979',
+            color: '#FFF',
             //Data to be represented on y-axis
-            data: datasets,
+            data: dayTempArray,
+          },
+          {
+            barPercentage: 0.4,
+            label: `Night Temperature`,
+            backgroundColor: '#4834d4',
+            borderWidth: 2,
+            borderColor: '#686de0',
+            color: '#FFF',
+            //Data to be represented on y-axis
+            data: nightTempArray,
           },
         ],
       };
@@ -104,7 +116,6 @@ export default {
 
   mounted() {
     // Overwriting base render method with actual data.
-    // console.log(typeof this.dataValues);
     this.renderChart(this.datacollection, this.options);
   },
 };

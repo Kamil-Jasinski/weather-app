@@ -16,7 +16,7 @@
 
       <div class="__weather-details">
         <div class="__temperature">{{ currentTemp }}&deg;C</div>
-        <div class="__location">{{ cityName }}, {{ cityCountry }}</div>
+        <div class="__location">{{ cityLocation }}</div>
         <div class="__additional-info">
           <span class="temperature-sensitive"
             >Feels like {{ feelsLikeTemp }} &deg;C</span
@@ -27,7 +27,7 @@
       </div>
     </div>
     <!-- <button @click="mainWidgetColor = 'red'">dfhsdf</button> -->
-    <button @click="log">Log</button>
+    <!-- <button @click="log">Log</button> -->
     <div class="weatcher-chart">
       <TheChart :chartData="weeklyData" class="chart-wrapper" />
     </div>
@@ -35,8 +35,8 @@
 </template>
 
 <script lang="ts">
-import { Component, Vue, Prop } from "vue-property-decorator";
-import TheChart from "@/components/TheChart.vue";
+import { Component, Vue, Prop } from 'vue-property-decorator';
+import TheChart from '@/components/TheChart.vue';
 
 @Component({
   components: {
@@ -48,45 +48,45 @@ export default class Widget extends Vue {
   @Prop() cityTimeZone: any; //Here will be one city name(timezone) Europe/London - currently selected
   @Prop() currCity: any; //Here will be one city object - currently selected
 
-  mainWidgetColor = "#0f113d";
+  mainWidgetColor = '#0f113d';
 
-  get currentCity() {
+  get currentCity(): any {
     return this.currCity;
   }
 
-  get cityName() {
+  get cityLocation(): string {
     return this.cityTimeZone;
   }
 
-  get cityCountry() {
-    return "placeholder";
-  }
+  // get cityCountry() {
+  //   return 'placeholder';
+  // }
 
-  get currentTemp() {
+  get currentTemp(): number {
     return this.currentCity.temp.toFixed(0);
   }
 
-  get feelsLikeTemp() {
+  get feelsLikeTemp(): number {
     return this.currentCity.feels_like.toFixed(0);
   }
 
-  get currentCityWidgetIconUrl() {
+  get currentCityWidgetIconUrl(): string {
     const iconCode = this.currentCity.weather[0].icon;
     const iconURL = `http://openweathermap.org/img/wn/${iconCode}.png`;
 
     return iconURL;
   }
 
-  get currentCityWidgetIconAlt() {
+  get currentCityWidgetIconAlt(): string {
     const iconAlt = this.currentCity.weather[0].description;
 
     return iconAlt;
   }
 
-  get sunsetTime() {
+  get sunsetTime(): string {
     const d = new Date(this.currentCity.dt * 1000); // to get the DateTime.
-    let hour = d.getHours();
-    let minute = d.getMinutes();
+    let hour: any = d.getHours();
+    let minute: any = d.getMinutes();
 
     if (hour < 10) {
       hour = `0${hour}`;
@@ -100,71 +100,33 @@ export default class Widget extends Vue {
     return sunsetTime;
   }
 
-  get currentCityDate() {
+  get currentCityDate(): string {
     const unix_timestamp = 1549312452;
-    const date = new Date(unix_timestamp * 1000);
 
-    const monthNames = [
-      "January",
-      "February",
-      "March",
-      "April",
-      "May",
-      "June",
-      "July",
-      "August",
-      "September",
-      "October",
-      "November",
-      "December",
-    ];
-
-    const year = date.getFullYear();
-    const month = monthNames[date.getMonth()];
-
-    const monthAndDay = new Date(`${year}-${month}`).toLocaleDateString(
-      "en-EN",
+    const monthAndDay = new Date(unix_timestamp * 1000).toLocaleDateString(
+      'en-EN',
       {
-        year: "numeric",
-        month: "long",
+        year: 'numeric',
+        month: 'long',
       }
     );
     return monthAndDay;
   }
 
-  get currentCityDay() {
-    // const selectFromDays = [
-    //   "Sunday",
-    //   "Monday",
-    //   "Tuesday",
-    //   "Wednesday",
-    //   "Thursday",
-    //   "Friday",
-    //   "Saturday",
-    // ];
-    // const d = new Date(this.currentCity.dt * 1000); // to get the DateTime.
-    // const dayNumber = d.getDay();
-    // const dayName = selectFromDays[dayNumber]; // It will give day index, and based on index we can get day name from the array.
-    // const currCityDay = `${dayNumber}  ${dayName}`;
-    // return currCityDay;
-    // const day = new Date(this.currentCity.dt).toLocaleDateString("en-US", {
-    //   weekday: "long",
-    //   day: "numeric",
-    // });
-
-    const options = {
-      weekday: "long",
-      day: "numeric",
+  get currentCityDay(): string {
+    const options: Record<string, unknown> = {
+      weekday: 'long',
+      day: 'numeric',
     };
     const today = new Date(this.currentCity.dt * 1000).toLocaleDateString(
-      "en-US",
+      'en-US',
       options
     );
 
     return today;
   }
 
-  log() {
+  log(): void {
     // console.log(this.weeklyData);
     //console.log(day.toLocaleDateString("en-EN", options));
   }
@@ -172,12 +134,14 @@ export default class Widget extends Vue {
 </script>
 
 <style lang="scss" scoped>
+$main-widget-color: let(--mainWidgetColor);
+$main-widget-color-top: #141750;
+$main-app-color: #0f113d;
 .widget {
-  $main-widget-color: let(--mainWidgetColor);
-  $main-widget-color-top: #141750;
-  $main-app-color: #0f113d;
-
   grid-area: widget;
+  grid-column: 6/-1;
+  grid-row: 1/-1;
+
   background: rgb(15, 17, 61);
   background: linear-gradient(
     0deg,
@@ -189,8 +153,8 @@ export default class Widget extends Vue {
   display: grid;
   grid-template-rows: 3fr 2fr;
   grid-template-areas:
-    "wToday"
-    "wChart";
+    'wToday'
+    'wChart';
 
   .weather-today {
     grid-area: wToday;
@@ -206,8 +170,8 @@ export default class Widget extends Vue {
       grid-template-columns: repeat(2, minmax(min-content, max-content));
       grid-template-rows: 1fr 1fr;
       grid-template-areas:
-        "todayIcon todayDetails"
-        "todayIcon todayDetails";
+        'todayIcon todayDetails'
+        'todayIcon todayDetails';
 
       .weather-day-icon {
         grid-area: todayIcon;
@@ -271,10 +235,8 @@ export default class Widget extends Vue {
 
   .weatcher-chart {
     grid-area: wChart;
-
-    // display: flex;
-    // flex-wrap: wrap;
-    // position: relative;
+    width: 100%;
+    margin: auto auto;
   }
 }
 </style>

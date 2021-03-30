@@ -1,6 +1,6 @@
 <template>
   <div class="widget" :style="`--mainWidgetColor:${mainWidgetColor}`">
-    <div class="weather-today">
+    <div v-if="isDataReady" class="weather-today">
       <div class="__day">
         <span class="weather-day-icon">
           <img
@@ -26,17 +26,24 @@
         </div>
       </div>
     </div>
-    <!-- <button @click="mainWidgetColor = 'red'">dfhsdf</button> -->
-    <!-- <button @click="log">Log</button> -->
-    <div class="weatcher-chart">
-      <TheChart :chartData="weeklyData" class="chart-wrapper" />
+    <!-- <button @click="mainWidgetColor = 'red'">log</button> -->
+
+    <div v-if="isDataReady" class="weatcher-chart">
+      <TheChart :chartData="chartWeeklyData" class="chart-wrapper" />
+    </div>
+
+    <div v-if="!isDataReady" class="__placeholder">
+      <h2 class="__notify">
+        Hi, we need some data from you, search for a city to see a forecast!
+      </h2>
+      <img src="@/assets/img/undraw_Weather_app_re_kcb1.svg" alt="" />
     </div>
   </div>
 </template>
 
 <script lang="ts">
-import { Component, Vue, Prop } from 'vue-property-decorator';
-import TheChart from '@/components/TheChart.vue';
+import { Component, Vue, Prop } from "vue-property-decorator";
+import TheChart from "@/components/TheChart.vue";
 
 @Component({
   components: {
@@ -44,11 +51,17 @@ import TheChart from '@/components/TheChart.vue';
   },
 })
 export default class Widget extends Vue {
-  @Prop() weeklyData: any; //Here will be whole week response for city
-  @Prop() cityTimeZone: any; //Here will be one city name(timezone) Europe/London - currently selected
-  @Prop() currCity: any; //Here will be one city object - currently selected
+  @Prop() weeklyData: any; //Here will be whole week response for city needed to chart
+  @Prop() isDataReady: any; //Check is data is ready to show
+  @Prop() cityTimeZone: any; //Here will be one timezone eg. Europe/London - currently selected
+  @Prop() currCity: any; //Here will be ONE/CURRENT/TODAY city object - currently selected
 
-  mainWidgetColor = '#0f113d';
+  mainWidgetColor = "#0f113d";
+
+  get chartWeeklyData() {
+    const week = this.weeklyData;
+    return week;
+  }
 
   get currentCity(): any {
     return this.currCity;
@@ -57,10 +70,6 @@ export default class Widget extends Vue {
   get cityLocation(): string {
     return this.cityTimeZone;
   }
-
-  // get cityCountry() {
-  //   return 'placeholder';
-  // }
 
   get currentTemp(): number {
     return this.currentCity.temp.toFixed(0);
@@ -104,10 +113,10 @@ export default class Widget extends Vue {
     const unix_timestamp = 1549312452;
 
     const monthAndDay = new Date(unix_timestamp * 1000).toLocaleDateString(
-      'en-EN',
+      "en-EN",
       {
-        year: 'numeric',
-        month: 'long',
+        year: "numeric",
+        month: "long",
       }
     );
     return monthAndDay;
@@ -115,11 +124,11 @@ export default class Widget extends Vue {
 
   get currentCityDay(): string {
     const options: Record<string, unknown> = {
-      weekday: 'long',
-      day: 'numeric',
+      weekday: "long",
+      day: "numeric",
     };
     const today = new Date(this.currentCity.dt * 1000).toLocaleDateString(
-      'en-US',
+      "en-US",
       options
     );
 
@@ -127,8 +136,7 @@ export default class Widget extends Vue {
   }
 
   log(): void {
-    // console.log(this.weeklyData);
-    //console.log(day.toLocaleDateString("en-EN", options));
+    console.log(this.weeklyData);
   }
 } //class
 </script>
@@ -141,6 +149,8 @@ $main-app-color: #0f113d;
   grid-area: widget;
   grid-column: 6/-1;
   grid-row: 1/-1;
+  width: 100%;
+  position: relative;
 
   background: rgb(15, 17, 61);
   background: linear-gradient(
@@ -153,8 +163,8 @@ $main-app-color: #0f113d;
   display: grid;
   grid-template-rows: 3fr 2fr;
   grid-template-areas:
-    'wToday'
-    'wChart';
+    "wToday"
+    "wChart";
 
   .weather-today {
     grid-area: wToday;
@@ -170,8 +180,8 @@ $main-app-color: #0f113d;
       grid-template-columns: repeat(2, minmax(min-content, max-content));
       grid-template-rows: 1fr 1fr;
       grid-template-areas:
-        'todayIcon todayDetails'
-        'todayIcon todayDetails';
+        "todayIcon todayDetails"
+        "todayIcon todayDetails";
 
       .weather-day-icon {
         grid-area: todayIcon;
@@ -237,6 +247,34 @@ $main-app-color: #0f113d;
     grid-area: wChart;
     width: 100%;
     margin: auto auto;
+  }
+
+  .__placeholder {
+    position: absolute;
+    bottom: 0;
+    top: 0;
+    left: 0;
+    right: 0;
+    display: flex;
+    flex-direction: column;
+    width: 100%;
+    height: 100%;
+    .__notify {
+      position: absolute;
+      top: 25%;
+      transform: translateY(-50%);
+      width: 70%;
+      align-self: center;
+      font-weight: 200;
+      font-size: 2.3rem;
+      letter-spacing: 0.2rem;
+    }
+    img {
+      position: absolute;
+      bottom: 0;
+      width: 100%;
+      justify-self: flex-end;
+    }
   }
 }
 </style>

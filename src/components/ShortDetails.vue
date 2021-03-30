@@ -1,6 +1,6 @@
 <template>
   <div class="shortDetails">
-    <ul class="day-info-container">
+    <ul v-if="isDataReady" class="day-info-container">
       <li class="day-info-wrapper __titles">
         <div class="day __title">
           <span>Day</span>
@@ -33,23 +33,36 @@
         <div class="temp">{{ weekDayTemp(index) }}&deg;C</div>
       </li>
     </ul>
+    <div v-if="!isDataReady" class="__placeholder">
+      <h3 class="__notify">
+        No data to show
+      </h3>
+      <img src="@/assets/img/undraw_empty_xct9.svg" alt="No data to show" />
+    </div>
     <!-- <button @click="log">LOG Response</button> -->
   </div>
 </template>
 
 <script lang="ts">
-import { Component, Prop, Vue } from 'vue-property-decorator';
+import { Component, Prop, Vue } from "vue-property-decorator";
 
 @Component
 export default class ShortDetails extends Vue {
-  @Prop() week: any; //Here will be one city object - currently selected
+  @Prop() weekResponse: any; //Here will be one city object - currently selected
+  @Prop() isDataReady: any; // Check if data is ready to work on
 
+  get week(): Array<any> {
+    const week = this.weekResponse;
+    // const responseRd = week.splice(1, 7);
+
+    return week;
+  }
   weekDayName(index: number): string {
     const options: Record<string, unknown> = {
-      weekday: 'long',
+      weekday: "long",
     };
     const dayName = new Date(this.week[index].dt * 1000).toLocaleDateString(
-      'en-US',
+      "en-US",
       options
     );
 
@@ -72,7 +85,7 @@ export default class ShortDetails extends Vue {
   weekDayRainChance(index: number): string {
     const rainChance = this.week[index].rain;
 
-    return rainChance ? `${rainChance}%` : '-';
+    return rainChance ? `${rainChance}%` : "-";
   }
 
   weekNightTemp(index: number): Array<number> {
@@ -94,11 +107,11 @@ export default class ShortDetails extends Vue {
     return iconAlt;
   }
 
-  log(): void {
-    const response = this.week;
+  // log(): void {
+  //   const response = this.week;
 
-    console.log(response);
-  }
+  //   console.log(response);
+  // }
 }
 </script>
 
@@ -191,6 +204,26 @@ export default class ShortDetails extends Vue {
       margin-bottom: 10px;
       font-weight: bold;
       font-size: 1.2em;
+    }
+  }
+
+  .__placeholder {
+    padding: 20px;
+    position: relative;
+    height: 100%;
+    .__notify {
+      position: absolute;
+      top: 10%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+
+      font-size: 2rem;
+      letter-spacing: 0.2rem;
+      white-space: nowrap;
+    }
+    img {
+      height: 100%;
+      width: 100%;
     }
   }
 }

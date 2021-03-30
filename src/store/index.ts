@@ -7,30 +7,49 @@ Vue.use(Vuex);
 export default new Vuex.Store({
   state: {
     apiKey: process.env.VUE_APP_API_KEY,
-    currentData: "data",
+    isDataReady: false,
+    currentData: [],
+    savedForecast: [],
   },
   mutations: {
     CHANGE_DATA(state, payload) {
       state.currentData = payload.data;
     },
+    CHANGE_DATA_READY(state, payload) {
+      state.isDataReady = payload.ready;
+    },
+    SAVE_FORECAST(state, payload) {
+      const singleForecast = payload.forecast;
+      state.savedForecast.unshift(singleForecast);
+    },
+    INIT_SAVED_FORECAST(state, payload) {
+      const arrayForecast = payload.forecastArray;
+      state.savedForecast = arrayForecast;
+    },
   },
   actions: {
-    getData({ commit }, { id, cityName, lat, lon }) {
-      axios
-        .get(
-          `https://api.openweathermap.org/data/2.5/onecall?lat=${lat}&lon=${lon}&exclude=minutely,alerts&appid=b93f22c5e3a1da701c993e8777e9abe4&units=metric`
-        )
-        .then((response) => {
-          console.log(response.data);
-
-          commit("CHANGE_DATA", { data: "zmiana" });
-        });
+    async getData({ commit }, { id, cityName, lat, lon }) {
+      try {
+        const response = await axios.get(
+          `https://api.openweathermap.org/data/2.5/onecall?lat=${lat}&lon=${lon}&exclude=minutely,alerts&appid=${this.state.apiKey}&units=metric`
+        );
+        commit("CHANGE_DATA", { data: response.data });
+        commit("CHANGE_DATA_READY", { ready: true });
+      } catch (error) {
+        throw new Error(error);
+      }
     },
   },
   modules: {},
   getters: {
     currentData: (state) => {
       return state.currentData;
+    },
+    isDataReady: (state) => {
+      return state.isDataReady;
+    },
+    savedForecast: (state) => {
+      return state.savedForecast;
     },
   },
 });

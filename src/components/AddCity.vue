@@ -2,9 +2,10 @@
   <div class="addCity">
     <div class="forecast-wrapper">
       <form class="add-city-form">
+        <h3>Search for your city:</h3>
         <v-select :options="cityNames" v-model="selectedCity"></v-select>
-        <p>{{ someState }}</p>
       </form>
+      <!-- <button @click="log">show saved</button> -->
 
       <!-- If there is searched card -->
       <div v-if="selectedCity" class="__to-save">
@@ -15,7 +16,7 @@
             <p>{{ selectedCity }}</p>
             <div class="actions">
               <button
-                @click.prevent="getCityForecast"
+                @click="saveCity"
                 name="Add to favourite"
                 role="Add to favourite"
               >
@@ -26,7 +27,11 @@
                 />
               </button>
 
-              <button name="Check forecast" role="Check forecast">
+              <button
+                @click.prevent="getCityForecast(selectedCity)"
+                name="Check forecast"
+                role="Check forecast"
+              >
                 <font-awesome-icon
                   name="Check forecast icon"
                   class="__check ico"
@@ -53,130 +58,19 @@
           navigationNextLabel="<button class='carousel-nav-button'>></button>"
           navigationPrevLabel="<button class='carousel-nav-button'><</button>"
         >
-          <slide>
+          <slide v-for="(city, index) in savedForecasts" :key="city.id">
             <div class="city-card">
-              <img src="https://picsum.photos/150/200?random=1.webp" alt="" />
-              <p>City, Country</p>
+              <img
+                :src="'https://picsum.photos/150/200?random=' + index"
+                alt="city pictrue"
+              />
+              <p>{{ city.name }}</p>
               <div class="actions">
                 <button>
                   <font-awesome-icon class="__heart ico" icon="heart-broken" />
                 </button>
 
-                <button>
-                  <font-awesome-icon
-                    class="__check ico"
-                    icon="cloud-download-alt"
-                  />
-                </button>
-              </div>
-            </div>
-          </slide>
-
-          <slide>
-            <div class="city-card">
-              <img src="https://picsum.photos/150/200?random=2.webp" alt="" />
-              <p>City, Country</p>
-              <div class="actions">
-                <button>
-                  <font-awesome-icon class="__heart ico" icon="heart-broken" />
-                </button>
-
-                <button>
-                  <font-awesome-icon
-                    class="__check ico"
-                    icon="cloud-download-alt"
-                  />
-                </button>
-              </div>
-            </div>
-          </slide>
-
-          <slide>
-            <div class="city-card">
-              <img src="https://picsum.photos/150/200?random=3.webp" alt="" />
-              <p>City, Country</p>
-              <div class="actions">
-                <button>
-                  <font-awesome-icon class="__heart ico" icon="heart-broken" />
-                </button>
-
-                <button>
-                  <font-awesome-icon
-                    class="__check ico"
-                    icon="cloud-download-alt"
-                  />
-                </button>
-              </div>
-            </div>
-          </slide>
-
-          <slide>
-            <div class="city-card">
-              <img src="https://picsum.photos/150/200?random=4.webp" alt="" />
-              <p>City, Country</p>
-              <div class="actions">
-                <button>
-                  <font-awesome-icon class="__heart ico" icon="heart-broken" />
-                </button>
-
-                <button>
-                  <font-awesome-icon
-                    class="__check ico"
-                    icon="cloud-download-alt"
-                  />
-                </button>
-              </div>
-            </div>
-          </slide>
-
-          <slide>
-            <div class="city-card">
-              <img src="https://picsum.photos/150/200?random=5.webp" alt="" />
-              <p>City, Country</p>
-              <div class="actions">
-                <button>
-                  <font-awesome-icon class="__heart ico" icon="heart-broken" />
-                </button>
-
-                <button>
-                  <font-awesome-icon
-                    class="__check ico"
-                    icon="cloud-download-alt"
-                  />
-                </button>
-              </div>
-            </div>
-          </slide>
-
-          <slide>
-            <div class="city-card">
-              <img src="https://picsum.photos/150/200?random=6.webp" alt="" />
-              <p>City, Country</p>
-              <div class="actions">
-                <button>
-                  <font-awesome-icon class="__heart ico" icon="heart-broken" />
-                </button>
-
-                <button>
-                  <font-awesome-icon
-                    class="__check ico"
-                    icon="cloud-download-alt"
-                  />
-                </button>
-              </div>
-            </div>
-          </slide>
-
-          <slide>
-            <div class="city-card">
-              <img src="https://picsum.photos/150/200?random=7.webp" alt="" />
-              <p>City, Country</p>
-              <div class="actions">
-                <button>
-                  <font-awesome-icon class="__heart ico" icon="heart-broken" />
-                </button>
-
-                <button>
+                <button @click.prevent="getCityForecast(city.name)">
                   <font-awesome-icon
                     class="__check ico"
                     icon="cloud-download-alt"
@@ -204,8 +98,52 @@ import cityJson from "@/assets/json/city.list.json";
   },
 })
 export default class AddCity extends Vue {
-  selectedCity = null;
-  someState = this.$store.getters.currentData;
+  selectedCity = "";
+
+  saveCity(): void {
+    //Get coords/id by city name
+    const searchedCity: any = cityJson.find(
+      (el) => el.name === this.selectedCity
+    );
+    const id: number = searchedCity.id;
+    const lon: number = searchedCity.coord.lon;
+    const lat: number = searchedCity.coord.lat;
+    // City details to save
+    const objToSave = {
+      name: this.selectedCity,
+      id: id,
+      lon: lon,
+      lat: lat,
+    };
+
+    // If there is no array o citys - create one
+    if (localStorage.citys === undefined) {
+      console.log("No array - create one");
+      localStorage.setItem("citys", [] as any);
+    }
+    // If array exists add city to this array
+    if (localStorage.citys !== null) {
+      // GET array
+      let citys = JSON.parse(localStorage.getItem("citys") || "[]");
+      // ADD city to array
+      citys.push(objToSave);
+      // Save array to localStorage
+      localStorage.setItem("citys", JSON.stringify(citys));
+      // console.log(citys);
+    }
+
+    this.$store.commit("SAVE_FORECAST", { forecast: objToSave });
+  }
+
+  get savedForecasts(): void {
+    let citys = this.$store.getters.savedForecast;
+    // if (localStorage.citys !== null) {
+    //   // GET array
+    //   citys = JSON.parse(localStorage.getItem("citys") || "[]");
+    // }
+
+    return citys;
+  }
 
   get cityNames() {
     let cityNamesArr: Array<string> = [];
@@ -219,24 +157,35 @@ export default class AddCity extends Vue {
     return cityNamesArr;
   }
 
-  getCityForecast() {
-    //Get coords by city name
-    const searchedCity: any = cityJson.find(
-      (el) => el.name === this.selectedCity
-    );
+  getCityForecast(selectedCityName: any) {
+    let cityname = selectedCityName;
+
+    // Get coords/id by city name
+    const searchedCity: any = cityJson.find((el) => el.name === cityname);
     const id: number = searchedCity.id;
     const lon: number = searchedCity.coord.lon;
     const lat: number = searchedCity.coord.lat;
 
-    // console.log(id, lat, lon);
-
     this.$store.dispatch({
       type: "getData",
       id: id,
-      cityName: this.selectedCity,
+      cityName: cityname,
       lat: lat,
       lon: lon,
     });
+
+    this.selectedCity = "";
+  }
+
+  created() {
+    // If array exist
+    let citys = [];
+    if (localStorage.citys !== null) {
+      // GET array
+      citys = JSON.parse(localStorage.getItem("citys") || "[]");
+    }
+
+    this.$store.commit("INIT_SAVED_FORECAST", { forecastArray: citys });
   }
 }
 </script>

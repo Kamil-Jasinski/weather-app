@@ -66,7 +66,7 @@
               />
               <p>{{ city.name }}</p>
               <div class="actions">
-                <button>
+                <button @click="removeFromFav(city.id)">
                   <font-awesome-icon class="__heart ico" icon="heart-broken" />
                 </button>
 
@@ -99,6 +99,7 @@ import cityJson from "@/assets/json/city.list.json";
 })
 export default class AddCity extends Vue {
   selectedCity = "";
+  timer = undefined as any;
 
   saveCity(): void {
     //Get coords/id by city name
@@ -125,23 +126,41 @@ export default class AddCity extends Vue {
     if (localStorage.citys !== null) {
       // GET array
       let citys = JSON.parse(localStorage.getItem("citys") || "[]");
-      // ADD city to array
-      citys.push(objToSave);
-      // Save array to localStorage
-      localStorage.setItem("citys", JSON.stringify(citys));
-      // console.log(citys);
-    }
+      // Is obj in array?
+      let isObjAlreadyInArray = citys.find(
+        (city: any) => city.id === objToSave.id
+      );
 
-    this.$store.commit("SAVE_FORECAST", { forecast: objToSave });
+      if (isObjAlreadyInArray === undefined) {
+        // ADD city to array
+        citys.push(objToSave);
+        this.selectedCity = "";
+        // Save array to localStorage
+        localStorage.setItem("citys", JSON.stringify(citys));
+        // Save item to state array
+        this.$store.commit("SAVE_FORECAST", { forecast: objToSave });
+      } else {
+        console.log("The city is already saved.");
+      }
+    }
+  }
+
+  removeFromFav(id: number) {
+    // If array exists remove city array
+    if (localStorage.citys !== null) {
+      // GET array
+      let citys = JSON.parse(localStorage.getItem("citys") || "[]");
+      // Is obj in array?
+      let newArray = citys.filter((city: any) => city.id != id);
+
+      // UPDATE state&localStorage array
+      this.$store.commit("UPDATE_SAVED_FORECAST", { updatedArray: newArray });
+      localStorage.setItem("citys", JSON.stringify(newArray));
+    } //if-end
   }
 
   get savedForecasts(): void {
     let citys = this.$store.getters.savedForecast;
-    // if (localStorage.citys !== null) {
-    //   // GET array
-    //   citys = JSON.parse(localStorage.getItem("citys") || "[]");
-    // }
-
     return citys;
   }
 
@@ -159,6 +178,7 @@ export default class AddCity extends Vue {
 
   getCityForecast(selectedCityName: any) {
     let cityname = selectedCityName;
+    window.clearTimeout(this.timer);
 
     // Get coords/id by city name
     const searchedCity: any = cityJson.find((el) => el.name === cityname);
@@ -175,6 +195,12 @@ export default class AddCity extends Vue {
     });
 
     this.selectedCity = "";
+
+    // UPDATE forecast after 60sec
+    this.timer = setTimeout(() => {
+      console.log("Updating Forecast for: ", cityname);
+      this.getCityForecast(cityname);
+    }, 60000);
   }
 
   created() {

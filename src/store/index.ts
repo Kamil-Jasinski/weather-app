@@ -1,6 +1,7 @@
 import Vue from "vue";
 import Vuex from "vuex";
 import axios from "axios";
+import firebase from "firebase";
 
 Vue.use(Vuex);
 
@@ -10,6 +11,7 @@ export default new Vuex.Store({
     isDataReady: false,
     currentData: [],
     savedForecast: [],
+    isLoggedIn: false,
   },
   mutations: {
     CHANGE_DATA(state, payload) {
@@ -19,12 +21,20 @@ export default new Vuex.Store({
       state.isDataReady = payload.ready;
     },
     SAVE_FORECAST(state, payload) {
-      const singleForecast = payload.forecast;
+      const singleForecast: any = payload.forecast;
       state.savedForecast.unshift(singleForecast);
     },
     INIT_SAVED_FORECAST(state, payload) {
       const arrayForecast = payload.forecastArray;
       state.savedForecast = arrayForecast;
+    },
+    UPDATE_SAVED_FORECAST(state, payload) {
+      const updatedForecast = payload.updatedArray;
+      state.savedForecast = updatedForecast;
+    },
+    CHANGE_IS_LOGGED_IN(state, payload) {
+      const isLoggedIn = payload.logged;
+      state.isLoggedIn = isLoggedIn;
     },
   },
   actions: {
@@ -39,6 +49,13 @@ export default new Vuex.Store({
         throw new Error(error);
       }
     },
+    checkAuth({ commit }) {
+      if (firebase.auth().currentUser) {
+        commit("CHANGE_IS_LOGGED_IN", { logged: true });
+      } else {
+        commit("CHANGE_IS_LOGGED_IN", { logged: false });
+      }
+    },
   },
   modules: {},
   getters: {
@@ -50,6 +67,9 @@ export default new Vuex.Store({
     },
     savedForecast: (state) => {
       return state.savedForecast;
+    },
+    isLoggedIn: (state) => {
+      return state.isLoggedIn;
     },
   },
 });

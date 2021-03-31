@@ -1,29 +1,67 @@
-import Vue from 'vue'
-import VueRouter, { RouteConfig } from 'vue-router'
-import Home from '../views/Home.vue'
+import Vue from "vue";
+import VueRouter, { RouteConfig } from "vue-router";
+import Home from "../views/Home.vue";
+import Dashboard from "../views/Dashboard.vue";
+import firebase from "firebase";
 
-Vue.use(VueRouter)
+firebase.getCurrentUser = () => {
+  return new Promise((resolve, reject) => {
+    const unsubscribe = firebase.auth().onAuthStateChanged((user) => {
+      unsubscribe();
+      resolve(user);
+    }, reject);
+  });
+};
+
+Vue.use(VueRouter);
 
 const routes: Array<RouteConfig> = [
   {
-    path: '/',
-    name: 'Home',
-    component: Home
+    path: "/home",
+    name: "Home",
+    component: Home,
+    meta: {
+      authRequired: true,
+    },
   },
   {
-    path: '/CityDetails',
-    name: 'CityDetails',
+    path: "/",
+    name: "Dashboard",
     // route level code-splitting
     // this generates a separate chunk (about.[hash].js) for this route
     // which is lazy-loaded when the route is visited.
-    component: () => import(/* webpackChunkName: "about" */ '../views/CityDetails.vue')
-  }
-]
+    component: Dashboard,
+  },
+];
 
 const router = new VueRouter({
-  mode: 'history',
+  mode: "history",
   base: process.env.BASE_URL,
-  routes
-})
+  routes,
+});
 
-export default router
+export default router;
+
+// router.beforeEach(async (to, from, next) => {
+//   const requiresAuth = to.matched.some((record) => record.meta.requiresAuth);
+//   if (requiresAuth && !(await firebase.getCurrentUser())) {
+//     next("signin");
+//   } else {
+//     next();
+//   }
+// });
+
+router.beforeEach((to, from, next) => {
+  if (to.matched.some((record) => record.meta.authRequired)) {
+    if (firebase.auth().currentUser) {
+      next();
+    } else {
+      alert("You must be logged in to see this page");
+      next({
+        path: "/",
+      });
+    }
+  } else {
+    next();
+  }
+});

@@ -30,6 +30,8 @@ import {
   faChevronRight,
   faChevronLeft,
   faUser,
+  faTint,
+  faSearchLocation,
 } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/vue-fontawesome";
 
@@ -40,12 +42,14 @@ library.add(
   faHeartBroken,
   faChevronRight,
   faChevronLeft,
-  faUser
+  faUser,
+  faTint,
+  faSearchLocation
 );
 Vue.component("font-awesome-icon", FontAwesomeIcon);
 
 Vue.config.productionTip = false;
-let app;
+let app: any;
 
 firebase.auth().onAuthStateChanged(() => {
   if (!app) {

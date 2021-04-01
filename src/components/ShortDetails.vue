@@ -20,7 +20,11 @@
         <div class="day">
           <span>{{ weekDayName(index) }}</span>
         </div>
-        <div class="humidity">{{ weekDayHumidity(index) }}</div>
+        <div class="humidity">
+          <font-awesome-icon style="margin-right: 5px;" icon="tint" />{{
+            weekDayHumidity(index)
+          }}
+        </div>
         <div class="ico">
           <span class="img-container">
             <img :src="weekDayIconUrl(index)" :alt="weekDayIconAlt(index)" />
@@ -155,7 +159,7 @@ export default class ShortDetails extends Vue {
 
 .shortDetails {
   grid-area: shortDetails;
-  grid-row: 8/-1;
+  grid-row: 7/-1;
   grid-column: 1/6;
   @include no-scroll-bar();
   height: 100%;
@@ -189,12 +193,14 @@ export default class ShortDetails extends Vue {
       .day {
         padding: 10px;
         border-radius: 10px;
-        background-color: #4834d4;
-        color: #fff;
+        font-weight: bold;
+        letter-spacing: 0.1rem;
+        color: #0f113d;
       }
       .__title {
         background-color: transparent;
         color: #0f113d;
+        letter-spacing: 0;
       }
 
       .ico {
@@ -261,6 +267,7 @@ export default class ShortDetails extends Vue {
     img {
       height: 100%;
       width: 100%;
+      max-height: 500px;
     }
   }
 }

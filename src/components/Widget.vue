@@ -148,6 +148,8 @@ $main-widget-color: let(--mainWidgetColor);
 $main-widget-color-top: #141750;
 $main-app-color: #0f113d;
 .widget {
+  border-top-right-radius: 25px;
+  border-bottom-right-radius: 25px;
   grid-area: widget;
   grid-column: 6/-1;
   grid-row: 1/-1;
@@ -158,7 +160,8 @@ $main-app-color: #0f113d;
     text-decoration: none;
     color: #cfcfd8;
     padding: 10px;
-    right: 0;
+    right: 40px;
+    top: 40px;
     z-index: 2;
     transition: color 0.4s ease-in-out;
     &:hover {

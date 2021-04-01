@@ -68,12 +68,12 @@ body {
   top: 50% !important;
   transform: translate(0, -50%) !important;
 }
-.VueCarousel-navigation-next {
-  right: 2% !important;
-}
-.VueCarousel-navigation-prev {
-  left: 2% !important;
-}
+// .VueCarousel-navigation-next {
+//   // right: 1.7% !important;
+// }
+// .VueCarousel-navigation-prev {
+//   // left: -3.9% !important;
+// }
 .carousel-nav-button {
   padding: 10px;
   color: rgba(15, 17, 61, 1);
@@ -84,6 +84,16 @@ body {
   cursor: pointer;
   &:hover {
     background-color: #ee5352b5;
+  }
+}
+
+// V-SELECT input
+.vs__selected-options {
+  .vs__search {
+    padding: 5px;
+    &::placeholder {
+      color: rgb(211, 211, 211);
+    }
   }
 }
 </style>

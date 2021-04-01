@@ -1,5 +1,8 @@
 <template>
   <div class="widget" :style="`--mainWidgetColor:${mainWidgetColor}`">
+    <router-link class="widget-link" to="/"
+      ><font-awesome-icon class="__user-ico" icon="user"
+    /></router-link>
     <div v-if="isDataReady" class="weather-today">
       <div class="__day">
         <span class="weather-day-icon">
@@ -26,7 +29,6 @@
         </div>
       </div>
     </div>
-    <!-- <button @click="mainWidgetColor = 'red'">log</button> -->
 
     <div v-if="isDataReady" class="weatcher-chart">
       <TheChart :chartData="chartWeeklyData" class="chart-wrapper" />
@@ -34,9 +36,9 @@
 
     <div v-if="!isDataReady" class="__placeholder">
       <h2 class="__notify">
-        Hi, we need some data from you, search for a city to see a forecast!
+        We need some data from you, search for a city to see a forecast!
       </h2>
-      <img src="@/assets/img/undraw_Weather_app_re_kcb1.svg" alt="" />
+      <!-- <img src="@/assets/img/undraw_Weather_app_re_kcb1.svg" alt="" /> -->
     </div>
   </div>
 </template>
@@ -151,6 +153,21 @@ $main-app-color: #0f113d;
   grid-row: 1/-1;
   width: 100%;
   position: relative;
+  .widget-link {
+    position: absolute;
+    text-decoration: none;
+    color: #cfcfd8;
+    padding: 10px;
+    right: 0;
+    z-index: 2;
+    transition: color 0.4s ease-in-out;
+    &:hover {
+      color: #eb4d4b;
+    }
+    .__user-ico {
+      font-size: 2rem;
+    }
+  }
 
   background: rgb(15, 17, 61);
   background: linear-gradient(
@@ -261,13 +278,13 @@ $main-app-color: #0f113d;
     height: 100%;
     .__notify {
       position: absolute;
-      top: 25%;
+      top: 50%;
       transform: translateY(-50%);
       width: 70%;
       align-self: center;
       font-weight: 200;
-      font-size: 2.3rem;
-      letter-spacing: 0.2rem;
+      font-size: 2.5rem;
+      letter-spacing: 0.1rem;
     }
     img {
       position: absolute;

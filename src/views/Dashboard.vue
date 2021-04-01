@@ -6,9 +6,18 @@
         Hi, you need to be logged in to use this app.
       </h2>
     </div>
-    <Login v-if="!isLoggedIn" />
-    <Register v-if="!isLoggedIn" />
+    <p v-if="!isLoggedIn" class="__login-method">
+      <span class="method" @click="loginForm('login')">Login</span> or
+      <span class="method" @click="loginForm('register')">Register</span>
+    </p>
+
+    <Login v-if="!isLoggedIn && selectedForm === 'login'" />
+    <Register v-if="!isLoggedIn && selectedForm === 'register'" />
     <Logout v-if="isLoggedIn" />
+    <span v-if="isLoggedIn">
+      <p style="color: #fff">Or</p>
+      <button><router-link to="/home">Back to App</router-link></button>
+    </span>
   </div>
 </template>
 
@@ -28,6 +37,12 @@ import firebase from "firebase";
   },
 })
 export default class Dashboard extends Vue {
+  selectedForm = "login";
+
+  loginForm(form: string) {
+    this.selectedForm = form;
+  }
+
   get isLoggedIn() {
     return this.$store.getters.isLoggedIn;
   }
@@ -53,10 +68,22 @@ export default class Dashboard extends Vue {
   align-items: center;
   padding: 30px;
 
-  background-color: #eb4d4b;
+  background-color: #32355c;
   border-radius: 25px;
   min-width: 30%;
   height: auto;
+
+  .__login-method {
+    color: #fff;
+    padding: 10px;
+    .method {
+      font-weight: bold;
+      cursor: pointer;
+      &:hover {
+        color: #eb4d4b;
+      }
+    }
+  }
 
   .__userName {
     border: 1px solid #ffffff;
@@ -72,10 +99,10 @@ export default class Dashboard extends Vue {
 
   .__logout-notify {
     padding: 20px;
-    background-color: #fff;
+    background-color: #ffffff08;
     border-radius: 25px;
     h2 {
-      color: #eb4d4b;
+      color: #e8f0fe;
       margin: 0;
       font-weight: bold;
     }
@@ -108,15 +135,28 @@ export default class Dashboard extends Vue {
     border: 1px solid #fff;
     border-radius: 25px;
     padding: 10px;
-    background-color: #fff;
+    background-color: transparent;
     font-weight: bold;
     font-size: 1rem;
     outline: none;
-    color: #eb4d4b;
+    background-color: #fff;
+    color: #32355c;
+    margin: 10px 0;
+    transition: all 0.6 ease-in-out;
+
+    a {
+      text-decoration: none;
+      color: #32355c;
+      transition: all 0.6 ease-in-out;
+    }
+
     &:hover {
+      background-color: transparent;
       color: #fff;
-      background-color: #eb4d4b;
       cursor: pointer;
+      a {
+        color: #fff;
+      }
     }
   }
 }

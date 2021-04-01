@@ -16,10 +16,10 @@
 </template>
 
 <script lang="ts">
-import { Component, Vue } from "vue-property-decorator";
-import AddCity from "@/components/AddCity.vue"; // @ is an alias to /src
-import ShortDetails from "@/components/ShortDetails.vue"; // @ is an alias to /src
-import Widget from "@/components/Widget.vue"; // @ is an alias to /src
+import { Component, Vue } from 'vue-property-decorator';
+import AddCity from '@/components/AddCity.vue'; // @ is an alias to /src
+import ShortDetails from '@/components/ShortDetails.vue'; // @ is an alias to /src
+import Widget from '@/components/Widget.vue'; // @ is an alias to /src
 
 @Component({
   components: {
@@ -74,8 +74,8 @@ export default class Home extends Vue {
 
 <style lang="scss">
 .home {
-  height: 90vh;
-  width: 90vw;
+  height: 1000px;
+  width: 1000px;
   background-color: #fff;
   border-radius: 25px;
   -webkit-box-shadow: 0px 6px 15px -5px #000000;

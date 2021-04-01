@@ -29,6 +29,7 @@ import {
   faHeartBroken,
   faChevronRight,
   faChevronLeft,
+  faUser,
 } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/vue-fontawesome";
 
@@ -38,7 +39,8 @@ library.add(
   faCloudDownloadAlt,
   faHeartBroken,
   faChevronRight,
-  faChevronLeft
+  faChevronLeft,
+  faUser
 );
 Vue.component("font-awesome-icon", FontAwesomeIcon);
 

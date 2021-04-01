@@ -5,7 +5,7 @@
         <div class="day __title">
           <span>Day</span>
         </div>
-        <div class="rainChance">Rain Chance</div>
+        <div class="humidity">Humidity</div>
         <div class="ico">
           Clouds
         </div>
@@ -20,7 +20,7 @@
         <div class="day">
           <span>{{ weekDayName(index) }}</span>
         </div>
-        <div class="rainChance">{{ weekDayRainChance(index) }}</div>
+        <div class="humidity">{{ weekDayHumidity(index) }}</div>
         <div class="ico">
           <span class="img-container">
             <img :src="weekDayIconUrl(index)" :alt="weekDayIconAlt(index)" />
@@ -34,9 +34,9 @@
       </li>
     </ul>
     <div v-if="!isDataReady" class="__placeholder">
-      <h3 class="__notify">
+      <!-- <h3 class="__notify">
         No data to show
-      </h3>
+      </h3> -->
       <img src="@/assets/img/undraw_empty_xct9.svg" alt="No data to show" />
     </div>
     <!-- <button @click="log">LOG Response</button> -->
@@ -82,10 +82,10 @@ export default class ShortDetails extends Vue {
     return dayTemp;
   }
 
-  weekDayRainChance(index: number): string {
-    const rainChance = this.week[index].rain;
+  weekDayHumidity(index: number): string {
+    const humidity = this.week[index].humidity;
 
-    return rainChance ? `${rainChance}%` : "-";
+    return humidity ? `${humidity}%` : "-";
   }
 
   weekNightTemp(index: number): Array<number> {
@@ -117,11 +117,47 @@ export default class ShortDetails extends Vue {
 
 <!-- Add "scoped" attribute to limit CSS to this component only -->
 <style lang="scss" scoped>
+// custom scroll-bar
+@mixin custom-scroll-bar() {
+  &::-webkit-scrollbar {
+    border-radius: 10px;
+    height: 10px;
+    width: 8px;
+  }
+
+  &::-webkit-scrollbar-thumb {
+    background: #999;
+    border-radius: 10px;
+  }
+
+  &::-webkit-scrollbar-track {
+    border-radius: 10px;
+  }
+}
+
+// no scroll bar
+@mixin no-scroll-bar() {
+  &::-webkit-scrollbar {
+    height: 0;
+    width: 0;
+  }
+
+  &::-webkit-scrollbar-thumb {
+    height: 0;
+    width: 0;
+  }
+
+  &::-webkit-scrollbar-track {
+    height: 0;
+    width: 0;
+  }
+}
+
 .shortDetails {
   grid-area: shortDetails;
   grid-row: 8/-1;
   grid-column: 1/6;
-
+  @include no-scroll-bar();
   height: 100%;
   overflow: auto;
 
@@ -141,7 +177,7 @@ export default class ShortDetails extends Vue {
       height: 50px;
 
       .day,
-      .rainChance,
+      .humidity,
       .ico,
       .temp {
         display: flex;
@@ -211,6 +247,7 @@ export default class ShortDetails extends Vue {
     padding: 20px;
     position: relative;
     height: 100%;
+    border-top: 1px solid #0f113d;
     .__notify {
       position: absolute;
       top: 10%;

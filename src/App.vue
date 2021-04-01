@@ -1,16 +1,12 @@
 <template>
   <div id="app">
-    <div id="nav">
-      <router-link to="/home">Home</router-link> |
-      <router-link to="/">Dashboard</router-link>
-    </div>
     <router-view />
   </div>
 </template>
 
 <script lang="ts">
 import { Vue, Component } from "vue-property-decorator";
-import firebase from "firebase";
+// import firebase from 'firebase';
 
 @Component
 export default class app extends Vue {
@@ -38,7 +34,7 @@ body {
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
   text-align: center;
-  background-color: #30336b;
+  background-color: #7c81e1;
   color: #0f113d;
   min-height: 100vh;
   width: 100vw;
@@ -47,23 +43,23 @@ body {
   align-items: center;
 }
 
-#nav {
-  position: absolute;
-  top: 0;
-  left: 50%;
-  transform: translate(-50%, 0);
-  padding: 30px;
-  display: block;
-}
+// #nav {
+//   position: absolute;
+//   top: 0;
+//   left: 50%;
+//   transform: translate(-50%, 0);
+//   padding: 10px;
+//   display: block;
+// }
 
-#nav a {
-  font-weight: bold;
-  color: #fff;
-}
+// #nav a {
+//   font-weight: bold;
+//   color: #fff;
+// }
 
-#nav a.router-link-exact-active {
-  color: #42b983;
-}
+// #nav a.router-link-exact-active {
+//   color: #42b983;
+// }
 
 // CAROUSELL NAV BUTTONS
 .VueCarousel-navigation-next,

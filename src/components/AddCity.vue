@@ -8,44 +8,49 @@
       <!-- <button @click="log">show saved</button> -->
 
       <!-- If there is searched card -->
-      <div v-if="selectedCity" class="__to-save">
+      <div v-if="selectedCity" class="cards __to-save">
         <h2 class="forecast-title">Searched Place:</h2>
         <div class="searched">
           <div class="city-card">
-            <img src="https://picsum.photos/150/200?random=9.webp" alt="" />
-            <p>{{ selectedCity }}</p>
-            <div class="actions">
-              <button
-                @click="saveCity"
-                name="Add to favourite"
-                role="Add to favourite"
-              >
-                <font-awesome-icon
-                  name="Add to favourite icon"
-                  class="__heart ico"
-                  icon="heart"
-                />
-              </button>
+            <span class="__wrapper">
+              <img src="https://picsum.photos/150/200?random=9.webp" alt="" />
+              <p>{{ selectedCity }}</p>
+              <div class="actions">
+                <button
+                  @click="saveCity"
+                  name="Add to favourite"
+                  role="Add to favourite"
+                >
+                  <font-awesome-icon
+                    name="Add to favourite icon"
+                    class="__heart ico"
+                    icon="heart"
+                  />
+                </button>
 
-              <button
-                @click.prevent="getCityForecast(selectedCity)"
-                name="Check forecast"
-                role="Check forecast"
-              >
-                <font-awesome-icon
-                  name="Check forecast icon"
-                  class="__check ico"
-                  icon="cloud-download-alt"
-                />
-              </button>
-            </div>
+                <button
+                  @click.prevent="getCityForecast(selectedCity)"
+                  name="Check forecast"
+                  role="Check forecast"
+                >
+                  <font-awesome-icon
+                    name="Check forecast icon"
+                    class="__check ico"
+                    icon="cloud-download-alt"
+                  />
+                </button>
+              </div>
+            </span>
           </div>
         </div>
       </div>
 
       <div class="cards">
-        <h2 class="forecast-title">Saved Forecast</h2>
+        <h2 v-if="savedForecasts.length > 0" class="forecast-title">
+          Saved Forecast
+        </h2>
         <carousel
+          v-if="savedForecasts.length > 0"
           :paginationEnabled="false"
           paginationColor="#8186EA"
           paginationActiveColor="#0f113d"
@@ -60,26 +65,34 @@
         >
           <slide v-for="(city, index) in savedForecasts" :key="city.id">
             <div class="city-card">
-              <img
-                :src="'https://picsum.photos/150/200?random=' + index"
-                alt="city pictrue"
-              />
-              <p>{{ city.name }}</p>
-              <div class="actions">
-                <button @click="removeFromFav(city.id)">
-                  <font-awesome-icon class="__heart ico" icon="heart-broken" />
-                </button>
+              <span class="__wrapper">
+                <img
+                  :src="'https://picsum.photos/150/200?random=' + index"
+                  alt="city pictrue"
+                />
+                <p @click.prevent="getCityForecast(city.name)">
+                  {{ city.name }}
+                </p>
 
-                <button @click.prevent="getCityForecast(city.name)">
-                  <font-awesome-icon
-                    class="__check ico"
-                    icon="cloud-download-alt"
-                  />
-                </button>
-              </div>
+                <div
+                  @click.prevent="getCityForecast(city.name)"
+                  class="actions"
+                >
+                  <button @click="removeFromFav(city.id)">
+                    <font-awesome-icon
+                      class="__heart-broken ico"
+                      icon="heart-broken"
+                    />
+                  </button>
+                </div>
+              </span>
             </div>
           </slide>
         </carousel>
+        <span v-if="savedForecasts.length == 0" class="__placeholder">
+          <img src="@/assets/img/undraw_Add_files_re_v09g.svg" alt="" />
+          <p>Save forecasts for your favourites citys</p>
+        </span>
       </div>
     </div>
   </div>
@@ -225,60 +238,84 @@ $main-app-color-hover: #1a1e69;
   padding: 20px;
   border-radius: 25px;
   position: relative;
-  &:hover {
-    cursor: default;
-    .actions {
-      display: flex;
+  // max-height: 200px;
+
+  .__wrapper {
+    display: inline-block;
+    height: 100%;
+    position: relative;
+    &:hover {
+      cursor: default;
+      .actions {
+        display: flex;
+      }
     }
-  }
-  img {
-    max-height: 150px;
-    max-width: 200px;
+    img {
+      max-height: 150px;
+      max-width: 100%;
+      border-radius: 25px;
+    }
+    p {
+      position: absolute;
+      bottom: 20%;
+      left: 50%;
+      transform: translate(-50%, 50%);
+      padding: 5px;
+      z-index: 2;
+      border-radius: 5px;
+      background-color: rgba(0, 0, 0, 0.6);
 
-    border-radius: 25px;
-  }
+      color: #fff;
+      font-weight: 200;
+      font-size: 1rem;
+      white-space: nowrap;
+      cursor: pointer;
+    }
 
-  .actions {
-    display: none;
-    position: absolute;
-    top: 0;
-    left: 0;
-    right: 0;
-    bottom: 0;
-    border-radius: 25px;
-
-    justify-content: center;
-    align-items: center;
-    flex-direction: row;
-    background-color: $actionBgColor;
-    button {
-      background-color: transparent;
-      padding: 10px;
-      outline: none;
-      border: none;
+    .actions {
+      display: none;
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      border-radius: 25px;
       cursor: pointer;
 
-      .ico {
-        font-size: 2rem;
-      }
-      .__heart {
-        color: #ff7979;
-        &:hover {
-          color: #eb4d4b;
+      justify-content: center;
+      align-items: center;
+      flex-direction: row;
+      background-color: $actionBgColor;
+      button {
+        background-color: transparent;
+        padding: 10px;
+        outline: none;
+        border: none;
+        cursor: pointer;
+
+        .ico {
+          font-size: 2rem;
         }
-      }
-      .__check {
-        color: #badc58;
-        &:hover {
-          color: #6ab04c;
+        .__heart,
+        .__heart-broken {
+          color: #ff7979;
+          &:hover {
+            color: #eb4d4b;
+          }
+        }
+        .__heart-broken {
+          position: absolute;
+          top: 5px;
+          left: 10px;
+        }
+        .__check {
+          color: #badc58;
+          &:hover {
+            color: #6ab04c;
+          }
         }
       }
     }
-  }
-
-  p {
-    margin-top: 10px;
-    color: #fff;
   }
 }
 
@@ -309,60 +346,8 @@ $main-app-color-hover: #1a1e69;
       border-bottom: 1px solid $main-app-color;
       padding: 10px 0;
       margin-bottom: 10px;
-
-      button {
-        padding: 15px;
-        border-radius: 25px;
-        border: 1px solid $main-app-color;
-        outline: none;
-      }
-      button {
-        background-color: $main-app-color;
-        color: #fff;
-      }
-      button:hover {
-        background-color: $main-app-color-hover;
-        cursor: pointer;
-      }
-    }
-    // City cards to save
-    .__to-save {
-      flex-grow: 1;
-      flex-basis: 0;
-      width: 50%;
-      align-self: center;
-
-      display: flex;
-      flex-direction: column;
-      background-color: #0f113d;
-      color: #fff;
-      padding: 20px;
-      border-radius: 25px;
-
-      .forecast-title {
-        display: flex;
-        justify-content: center;
-        align-items: center;
-
-        margin-bottom: 20px;
-      }
-      //Currently searched - wrapper for card
-      .searched {
-        align-self: center;
-        display: inline-block;
-        .city-card {
-          @include city-card(hsla(237, 61%, 15%, 0.5));
-
-          background-color: #686de0;
-          background: rgb(15, 17, 61);
-          background: linear-gradient(
-            0deg,
-            rgba(15, 17, 61, 1) 0%,
-            rgba(104, 109, 224, 1) 100%
-          );
-          color: $main-app-color;
-          font-weight: bold;
-        }
+      h3 {
+        margin-right: 10px;
       }
     }
 
@@ -386,6 +371,17 @@ $main-app-color-hover: #1a1e69;
         color: #fff;
         margin: 0 5px;
       }
+      .__placeholder {
+        img {
+          width: 200px;
+          align-self: center;
+        }
+      }
+    }
+
+    // City cards to save
+    .__to-save {
+      align-self: center;
     }
   }
 }

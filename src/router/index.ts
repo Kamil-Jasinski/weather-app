@@ -4,14 +4,14 @@ import Home from "../views/Home.vue";
 import Dashboard from "../views/Dashboard.vue";
 import firebase from "firebase";
 
-firebase.getCurrentUser = () => {
-  return new Promise((resolve, reject) => {
-    const unsubscribe = firebase.auth().onAuthStateChanged((user) => {
-      unsubscribe();
-      resolve(user);
-    }, reject);
-  });
-};
+// firebase.getCurrentUser = () => {
+//   return new Promise((resolve, reject) => {
+//     const unsubscribe = firebase.auth().onAuthStateChanged((user) => {
+//       unsubscribe();
+//       resolve(user);
+//     }, reject);
+//   });
+// };
 
 Vue.use(VueRouter);
 
@@ -41,15 +41,6 @@ const router = new VueRouter({
 });
 
 export default router;
-
-// router.beforeEach(async (to, from, next) => {
-//   const requiresAuth = to.matched.some((record) => record.meta.requiresAuth);
-//   if (requiresAuth && !(await firebase.getCurrentUser())) {
-//     next("signin");
-//   } else {
-//     next();
-//   }
-// });
 
 router.beforeEach((to, from, next) => {
   if (to.matched.some((record) => record.meta.authRequired)) {

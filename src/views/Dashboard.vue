@@ -13,11 +13,15 @@
 
     <Login v-if="!isLoggedIn && selectedForm === 'login'" />
     <Register v-if="!isLoggedIn && selectedForm === 'register'" />
-    <Logout v-if="isLoggedIn" />
-    <span v-if="isLoggedIn">
+    <span class="logged-in-menu" v-if="isLoggedIn">
+      <Logout />
       <p style="color: #fff">Or</p>
       <button><router-link to="/home">Back to App</router-link></button>
     </span>
+
+    <div v-if="showLoginAlert" :class="`log-info ${loginAlertClass}`">
+      <p>{{ loginAlertContent }}</p>
+    </div>
   </div>
 </template>
 
@@ -39,18 +43,30 @@ import firebase from "firebase";
 export default class Dashboard extends Vue {
   selectedForm = "login";
 
-  loginForm(form: string) {
+  private loginForm(form: string): void {
     this.selectedForm = form;
   }
 
-  get isLoggedIn() {
+  get isLoggedIn(): boolean {
     return this.$store.getters.isLoggedIn;
   }
 
-  get userName(): void {
-    let name: string;
+  get loginAlertContent(): string {
+    return this.$store.getters.loginAlertContent;
+  }
+
+  get showLoginAlert(): boolean {
+    return this.$store.getters.showLoginAlert;
+  }
+
+  get loginAlertClass(): string {
+    return this.$store.getters.loginAlertClass;
+  }
+
+  get userName(): string | null | undefined {
+    let name: string | null | undefined;
     if (firebase.auth().currentUser !== null) {
-      name = firebase.auth().currentUser.email;
+      name = firebase.auth().currentUser?.email;
     } else {
       name = "";
     }
@@ -67,11 +83,13 @@ export default class Dashboard extends Vue {
   justify-content: center;
   align-items: center;
   padding: 30px;
+  position: relative;
 
   background-color: #32355c;
   border-radius: 25px;
-  min-width: 30%;
+  min-width: 810px;
   height: auto;
+  min-height: 500px;
 
   .__login-method {
     color: #fff;
@@ -95,6 +113,36 @@ export default class Dashboard extends Vue {
     margin: 20px 0;
     color: #fff;
     display: flex;
+  }
+
+  .logged-in-menu {
+    display: flex;
+    width: max-content;
+    justify-content: space-between;
+    align-items: center;
+    flex-direction: row;
+  }
+
+  .log-info {
+    border: 1px solid transparent;
+    margin-bottom: 10px;
+    border-radius: 0.25rem;
+    position: absolute;
+    bottom: 0;
+    p {
+      padding: 15px;
+    }
+  }
+  .error {
+    color: #721c24;
+    background-color: #f8d7da;
+    border-color: #f5c6cb;
+  }
+
+  .success {
+    background-color: #d4edda;
+    color: #155724;
+    border-color: #c3e6cb;
   }
 
   .__logout-notify {
@@ -135,13 +183,13 @@ export default class Dashboard extends Vue {
     border: 1px solid #fff;
     border-radius: 25px;
     padding: 10px;
+    margin: 10px 15px;
     background-color: transparent;
     font-weight: bold;
     font-size: 1rem;
     outline: none;
     background-color: #fff;
     color: #32355c;
-    margin: 10px 0;
     transition: all 0.6 ease-in-out;
 
     a {

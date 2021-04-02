@@ -19,7 +19,9 @@
 
       <div class="__weather-details">
         <div class="__temperature">{{ currentTemp }}&deg;C</div>
-        <div class="__location">{{ cityLocation }}</div>
+        <div class="__location">
+          {{ currentlySelectedCityName }} - {{ cityLocation }}
+        </div>
         <div class="__additional-info">
           <span class="temperature-sensitive"
             >Feels like {{ feelsLikeTemp }} &deg;C</span
@@ -60,7 +62,11 @@ export default class Widget extends Vue {
 
   mainWidgetColor = "#0f113d";
 
-  get chartWeeklyData() {
+  get currentlySelectedCityName(): string {
+    return this.$store.getters.currentlySelectedCity;
+  }
+
+  get chartWeeklyData(): any[] {
     const week = this.weeklyData;
     return week;
   }

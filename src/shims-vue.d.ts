@@ -5,4 +5,4 @@ declare module "*.vue" {
 
 declare module "vue-carousel";
 declare module "vue-select";
-declare module "vueperslides";
+declare module "@glidejs/glide";

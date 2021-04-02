@@ -9,9 +9,13 @@ export default new Vuex.Store({
   state: {
     apiKey: process.env.VUE_APP_API_KEY,
     isDataReady: false,
-    currentData: [],
-    savedForecast: [],
-    isLoggedIn: false,
+    currentData: [], // Currently shown data (forecast for currently selected city)
+    savedForecast: [], // Saved Forecasts
+    isLoggedIn: false, // Is user currently logged in
+    currentlySelectedCity: "", // Name eg. London
+    showLoginAlert: false, // Should show alert in dashboard ?
+    loginAlertContent: "", // Text content to alert in dashboard
+    loginAlertClass: "", // Class for alert in dashboard (success, error)
   },
   mutations: {
     CHANGE_DATA(state, payload) {
@@ -21,7 +25,7 @@ export default new Vuex.Store({
       state.isDataReady = payload.ready;
     },
     SAVE_FORECAST(state, payload) {
-      const singleForecast: any = payload.forecast;
+      const singleForecast = payload.forecast;
       state.savedForecast.unshift(singleForecast);
     },
     INIT_SAVED_FORECAST(state, payload) {
@@ -36,6 +40,19 @@ export default new Vuex.Store({
       const isLoggedIn = payload.logged;
       state.isLoggedIn = isLoggedIn;
     },
+    SET_CURR_SEL_CITY(state, payload) {
+      //selCity = name for example: Rzeszów or London
+      const selCity = payload.selCity;
+      state.currentlySelectedCity = selCity;
+    },
+    SET_LOGIN_ALERT(state, payload) {
+      const showAlert = payload.showAlert;
+      const alertContent = payload.content;
+      const alertClass = payload.class;
+      state.showLoginAlert = showAlert;
+      state.loginAlertContent = alertContent;
+      state.loginAlertClass = alertClass;
+    },
   },
   actions: {
     async getData({ commit }, { id, cityName, lat, lon }) {
@@ -45,6 +62,7 @@ export default new Vuex.Store({
         );
         commit("CHANGE_DATA", { data: response.data });
         commit("CHANGE_DATA_READY", { ready: true });
+        commit("SET_CURR_SEL_CITY", { selCity: cityName });
       } catch (error) {
         throw new Error(error);
       }
@@ -70,6 +88,18 @@ export default new Vuex.Store({
     },
     isLoggedIn: (state) => {
       return state.isLoggedIn;
+    },
+    currentlySelectedCity: (state) => {
+      return state.currentlySelectedCity;
+    },
+    showLoginAlert: (state) => {
+      return state.showLoginAlert;
+    },
+    loginAlertContent: (state) => {
+      return state.loginAlertContent;
+    },
+    loginAlertClass: (state) => {
+      return state.loginAlertClass;
     },
   },
 });

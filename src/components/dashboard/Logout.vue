@@ -2,7 +2,7 @@
   <button @click="logout" class="__logout">Logout</button>
 </template>
 
-<script>
+<script lang="ts">
 import { Vue, Component } from "vue-property-decorator";
 import firebase from "firebase";
 
@@ -10,17 +10,42 @@ import firebase from "firebase";
 export default class Logout extends Vue {
   email = "";
   password = "";
+  logoutAlert: any;
 
-  logout() {
+  logout(): void {
     firebase
       .auth()
       .signOut()
       .then(() => {
-        alert("Successfully logged out");
+        // CLEAR ALERT TIMEOUT
+        window.clearTimeout(this.logoutAlert);
+
+        // IS USER LOGGED IN ?
         this.$store.commit("CHANGE_IS_LOGGED_IN", { logged: false });
+
+        // SET SUCCESS ALERT
+        this.$store.commit("SET_LOGIN_ALERT", {
+          showAlert: true,
+          content: "Successfull logged out!",
+          class: "success",
+        });
+
+        // SET ALERT TIMEOUT / CLEAR ALERT
+        this.logoutAlert = setTimeout(() => {
+          this.$store.commit("SET_LOGIN_ALERT", {
+            showAlert: false,
+            content: "",
+            class: "",
+          });
+        }, 3000);
       })
       .catch((error) => {
-        alert(error.message);
+        // SET ERROR ALERT
+        this.$store.commit("SET_LOGIN_ALERT", {
+          showAlert: true,
+          content: error.message,
+          class: "error",
+        });
       });
   }
 }

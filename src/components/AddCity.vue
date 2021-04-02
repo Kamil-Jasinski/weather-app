@@ -7,21 +7,25 @@
           <v-select
             placeholder="Search for your city"
             :options="cityNames"
-            v-model="selectedCity"
+            v-model="selectedCityInput"
           ></v-select>
         </label>
       </form>
-      <!-- <button @click="log">show saved</button> -->
 
       <div class="cards">
-        <!-- If there is searched card -->
-
-        <div v-if="selectedCity" class="searched">
+        <!-- SEARCHED CARD -->
+        <div v-if="selectedCityInput" class="searched">
           <h2 class="forecast-title">Searched Place:</h2>
-          <div class="city-card">
+          <div
+            :class="
+              `city-card ${
+                shouldScaleCard(selectedCityInput) ? ' scaled-card' : ''
+              }`
+            "
+          >
             <span class="__wrapper">
               <img src="https://picsum.photos/150/200?random=9.webp" alt="" />
-              <p>{{ selectedCity }}</p>
+              <p>{{ selectedCityInput }}</p>
               <div class="actions">
                 <button
                   @click="saveCity"
@@ -34,33 +38,69 @@
                     icon="heart"
                   />
                 </button>
-
-                <button
-                  @click.prevent="getCityForecast(selectedCity)"
-                  name="Check forecast"
-                  role="Check forecast"
+                <div
+                  class="__download-data"
+                  @click.prevent="getCityForecast(selectedCityInput)"
                 >
-                  <font-awesome-icon
-                    name="Check forecast icon"
-                    class="__check ico"
-                    icon="cloud-download-alt"
-                  />
-                </button>
+                  <!-- actions overlay - download data on click -->
+                </div>
               </div>
             </span>
           </div>
         </div>
 
-        <div class="carousel-wrapper">
-          <h2 v-if="savedForecasts.length > 0" class="forecast-title">
-            Saved <strong>Forecast</strong>:
+        <!-- SAVED CARDS -->
+        <div v-if="savedForecasts.length > 0" class="carousel-wrapper">
+          <h2 class="forecast-title">
+            Saved Forecast:
           </h2>
+
+          <!-- <div class="glide">
+            <div class="glide__track" data-glide-el="track">
+              <ul class="glide__slides">
+                <div
+                  v-for="(city, index) in savedForecasts"
+                  :key="city.id"
+                  :class="
+                    `city-card ${
+                      shouldScaleCard(city.name) ? ' scaled-card' : ''
+                    }`
+                  "
+                >
+                  <span class="__wrapper">
+                    <img
+                      :src="'https://picsum.photos/150/200?random=' + index"
+                      alt="city pictrue"
+                    />
+                    <p @click.prevent="getCityForecast(city.name)">
+                      {{ city.name }}
+                    </p>
+
+                    <div class="actions">
+                      <div
+                        class="__download-data"
+                        name="actions overlay to collect data"
+                        @click.prevent="getCityForecast(city.name)"
+                      ></div>
+
+                      <button name="remove" @click="removeFromFav(city.id)">
+                        <font-awesome-icon
+                          class="__heart-broken ico"
+                          icon="heart-broken"
+                        />
+                      </button>
+                    </div>
+                  </span>
+                </div>
+              </ul>
+            </div>
+          </div> -->
 
           <carousel
             style="width: 90%"
             v-if="savedForecasts.length > 0"
             :paginationEnabled="false"
-            :centerMode="false"
+            :centerMode="true"
             :perPage="carouselSlidesNumber"
             :loop="true"
             :navigationEnabled="true"
@@ -68,7 +108,13 @@
             navigationPrevLabel="<button class='carousel-nav-button'><</button>"
           >
             <slide v-for="(city, index) in savedForecasts" :key="city.id">
-              <div class="city-card">
+              <div
+                :class="
+                  `city-card ${
+                    shouldScaleCard(city.name) ? ' scaled-card' : ''
+                  }`
+                "
+              >
                 <span class="__wrapper">
                   <img
                     :src="'https://picsum.photos/150/200?random=' + index"
@@ -78,11 +124,14 @@
                     {{ city.name }}
                   </p>
 
-                  <div
-                    @click.prevent="getCityForecast(city.name)"
-                    class="actions"
-                  >
-                    <button class="__remove" @click="removeFromFav(city.id)">
+                  <div class="actions">
+                    <div
+                      class="__download-data"
+                      name="actions overlay to collect data"
+                      @click.prevent="getCityForecast(city.name)"
+                    ></div>
+
+                    <button name="remove" @click="removeFromFav(city.id)">
                       <font-awesome-icon
                         class="__heart-broken ico"
                         icon="heart-broken"
@@ -94,6 +143,8 @@
             </slide>
           </carousel>
         </div>
+
+        <!-- PLACEHOLDER -->
         <span v-if="savedForecasts.length == 0" class="__placeholder">
           <img src="@/assets/img/undraw_Add_files_re_v09g.svg" alt="" />
           <p>Save forecasts for your favourites citys</p>
@@ -104,10 +155,11 @@
 </template>
 
 <script lang="ts">
-import { Component, Vue } from "vue-property-decorator";
+import { Component, Vue, Watch } from "vue-property-decorator";
 import { Carousel, Slide } from "vue-carousel";
 
 import cityJson from "@/assets/json/city.list.json";
+import Glide from "@glidejs/glide";
 
 @Component({
   components: {
@@ -116,15 +168,25 @@ import cityJson from "@/assets/json/city.list.json";
   },
 })
 export default class AddCity extends Vue {
-  selectedCity = "";
+  selectedCityInput = "";
+  timer: any;
+  glideInstance: any = null;
 
-  currentlySelected(cityName) {
-    console.log("cos");
+  shouldScaleCard(cardCityName: string): boolean {
+    if (cardCityName === this.currentlySelectedCity) {
+      return true;
+    } else {
+      return false;
+    }
+  }
+
+  get currentlySelectedCity(): string {
+    return this.$store.getters.currentlySelectedCity;
   }
 
   get carouselSlidesNumber(): number {
     let isSelected = 3;
-    if (this.selectedCity === "") {
+    if (this.selectedCityInput === "") {
       isSelected = 3;
     } else {
       isSelected = 2;
@@ -132,19 +194,18 @@ export default class AddCity extends Vue {
 
     return isSelected;
   }
-  timer = undefined as any;
 
   saveCity(): void {
     //Get coords/id by city name
     const searchedCity: any = cityJson.find(
-      (el) => el.name === this.selectedCity
+      (el) => el.name === this.selectedCityInput
     );
     const id: number = searchedCity.id;
     const lon: number = searchedCity.coord.lon;
     const lat: number = searchedCity.coord.lat;
     // City details to save
     const objToSave = {
-      name: this.selectedCity,
+      name: this.selectedCityInput,
       id: id,
       lon: lon,
       lat: lat,
@@ -167,7 +228,7 @@ export default class AddCity extends Vue {
       if (isObjAlreadyInArray === undefined) {
         // ADD city to array
         citys.push(objToSave);
-        this.selectedCity = "";
+        this.selectedCityInput = "";
         // Save array to localStorage
         localStorage.setItem("citys", JSON.stringify(citys));
         // Save item to state array
@@ -178,7 +239,7 @@ export default class AddCity extends Vue {
     }
   }
 
-  removeFromFav(id: number) {
+  removeFromFav(id: number): void {
     // If array exists remove city array
     if (localStorage.citys !== null) {
       // GET array
@@ -197,7 +258,7 @@ export default class AddCity extends Vue {
     return citys;
   }
 
-  get cityNames() {
+  get cityNames(): string[] {
     let cityNamesArr: Array<string> = [];
 
     //Get names from json
@@ -209,16 +270,20 @@ export default class AddCity extends Vue {
     return cityNamesArr;
   }
 
-  getCityForecast(selectedCityName: any) {
+  getCityForecast(selectedCityName: string): void {
+    clearTimeout(this.timer);
+    console.log(this.$store.getters.isLoggedIn);
+
     let cityname = selectedCityName;
-    window.clearTimeout(this.timer);
 
     // Get coords/id by city name
     const searchedCity: any = cityJson.find((el) => el.name === cityname);
+
     const id: number = searchedCity.id;
     const lon: number = searchedCity.coord.lon;
     const lat: number = searchedCity.coord.lat;
 
+    // Get Data
     this.$store.dispatch({
       type: "getData",
       id: id,
@@ -227,14 +292,22 @@ export default class AddCity extends Vue {
       lon: lon,
     });
 
-    // UPDATE forecast after 60sec
-    this.timer = setTimeout(() => {
+    // UPDATE forecast after 60sec if user is logged in
+    if (this.$store.getters.isLoggedIn === true) {
       console.log("Updating Forecast for: ", cityname);
-      this.getCityForecast(cityname);
-    }, 60000);
+
+      this.timer = setTimeout(() => {
+        this.getCityForecast(cityname);
+        cityname = "";
+      }, 60000);
+
+      this.$store.commit("SET_CURR_SEL_CITY", { selCity: "" });
+    } else {
+      console.log("NIE SPRAWDZAJ");
+    }
   }
 
-  created() {
+  created(): void {
     // If array exist
     let citys = [];
     if (localStorage.citys !== null) {
@@ -244,6 +317,36 @@ export default class AddCity extends Vue {
 
     this.$store.commit("INIT_SAVED_FORECAST", { forecastArray: citys });
   }
+
+  // mounted() {
+  //   this.glideInstance = new Glide(".glide", {
+  //     type: "slider",
+  //     // startAt: 0,
+  //     perView: this.carouselSlidesNumber,
+  //   }).mount();
+  // }
+
+  // @Watch("savedForecasts") watchSavedForecasts() {
+  //   console.log(this.glideInstance);
+  // if(this.savedForecast)
+  //   this.glideInstance.update({
+
+  //   });
+  // }
+
+  // @Watch("selectedCityInput") perView() {
+  //   if (this.selectedCityInput === "") {
+  //     console.log("powinno być2");
+  //     this.glideInstance.update({
+  //       perView: 2,
+  //     });
+  //   } else {
+  //     console.log("powinno być2");
+  //     this.glideInstance.update({
+  //       perView: 3,
+  //     });
+  //   }
+  // }
 }
 </script>
 
@@ -251,6 +354,11 @@ export default class AddCity extends Vue {
 <style lang="scss" scoped>
 $main-app-color: #0f113d;
 $main-app-color-hover: #1a1e69;
+// Required Core Stylesheet
+@import "node_modules/@glidejs/glide/src/assets/sass/glide.core";
+
+// Optional Theme Stylesheet
+@import "node_modules/@glidejs/glide/src/assets/sass/glide.theme";
 
 .addCity {
   grid-row: 1/7;
@@ -298,13 +406,21 @@ $main-app-color-hover: #1a1e69;
       align-items: center;
       height: 100%;
       width: 100%;
-      justify-content: center;
+      // justify-content: center;
       overflow: hidden;
       .carousel-wrapper {
         display: flex;
         width: 100%;
         align-items: center;
         flex-direction: column;
+
+        -webkit-touch-callout: none; /* iOS Safari */
+        -webkit-user-select: none; /* Safari */
+        -khtml-user-select: none; /* Konqueror HTML */
+        -moz-user-select: none; /* Old versions of Firefox */
+        -ms-user-select: none; /* Internet Explorer/Edge */
+        user-select: none; /* Non-prefixed version, currently
+                                  supported by Chrome, Edge, Opera and Firefox */
       }
 
       .forecast-title {
@@ -315,12 +431,21 @@ $main-app-color-hover: #1a1e69;
 
       .city-card {
         position: relative;
+        img {
+          position: relative;
+          z-index: 1;
+          width: auto;
+          height: 200px;
+          border-top-left-radius: 10px;
+          border-top-right-radius: 10px;
+        }
         .__wrapper {
           display: inline-block;
           width: auto;
           position: relative;
           border-left: 1px solid hsla(237, 61%, 15%, 0.3);
           border-bottom: 1px solid hsla(237, 61%, 15%, 0.3);
+          border-top-left-radius: 10px;
 
           &:hover {
             .actions {
@@ -341,6 +466,7 @@ $main-app-color-hover: #1a1e69;
             z-index: 2;
             width: 100%;
             height: 100%;
+            transition: background-color 0.3s ease-in-out;
 
             &:hover {
               background-color: hsla(4, 80%, 96%, 0.3);
@@ -352,9 +478,11 @@ $main-app-color-hover: #1a1e69;
               outline: none;
               border: none;
               cursor: pointer;
-              position: relative;
-              z-index: 3;
-
+              position: absolute;
+              left: 0;
+              border-top-left-radius: 10px;
+              z-index: 4;
+              pointer-events: auto;
               .ico {
                 font-size: 2rem;
               }
@@ -372,16 +500,50 @@ $main-app-color-hover: #1a1e69;
                 }
               }
             }
-            .__remove {
+
+            .__download-data {
               position: absolute;
-              left: 0 !important;
+              width: 100%;
+              height: 100%;
+            }
+            .__btn-check-weatcher {
+              left: auto;
+              right: 0 !important;
+              border-top-right-radius: 10px;
+              border-top-left-radius: 0;
             }
           }
         }
       }
 
-      .__placeholder {
+      .searched {
+        .city-card {
+          .__wrapper {
+            .actions {
+              &:hover {
+                // background-color: transparent !important;
+                cursor: default;
+              }
+            }
+          }
+        }
+      }
+
+      .scaled-card {
         img {
+          height: 250px;
+        }
+      }
+
+      .__placeholder {
+        width: 100%;
+        height: 100%;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        flex-direction: column;
+        img {
+          margin-bottom: 20px;
           width: 200px;
           align-self: center;
         }

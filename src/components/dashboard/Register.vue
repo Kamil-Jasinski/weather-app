@@ -11,7 +11,7 @@
   </div>
 </template>
 
-<script>
+<script lang="ts">
 import { Vue, Component } from "vue-property-decorator";
 import firebase from "firebase";
 
@@ -19,18 +19,43 @@ import firebase from "firebase";
 export default class Register extends Vue {
   email = "";
   password = "";
+  registerAlert: any;
 
-  register() {
+  register(): void {
     firebase
       .auth()
       .createUserWithEmailAndPassword(this.email, this.password)
       .then(() => {
-        alert("Successfully registered!");
+        // CLEAR ALERT TIMEOUT
+        window.clearTimeout(this.registerAlert);
+
+        // IS USER LOGGED IN ?
         this.$store.commit("CHANGE_IS_LOGGED_IN", { logged: true });
-        this.$router.push("/home");
+
+        // SET SUCCESS ALERT
+        this.$store.commit("SET_LOGIN_ALERT", {
+          showAlert: true,
+          content: "Welcome on the board! Have a nice time!",
+          class: "success",
+        });
+
+        // SET ALERT TIMEOUT / CLEAR ALERT
+        this.registerAlert = setTimeout(() => {
+          this.$store.commit("SET_LOGIN_ALERT", {
+            showAlert: false,
+            content: "",
+            class: "",
+          });
+          this.$router.push("/home");
+        }, 3000);
       })
       .catch((error) => {
-        alert(error.message);
+        // SET ERROR ALERT
+        this.$store.commit("SET_LOGIN_ALERT", {
+          showAlert: true,
+          content: error.message,
+          class: "error",
+        });
       });
   }
 }

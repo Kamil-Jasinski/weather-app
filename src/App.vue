@@ -96,4 +96,8 @@ body {
     }
   }
 }
+
+// .VueCarousel-wrapper {
+//   overflow: visible;
+// }
 </style>

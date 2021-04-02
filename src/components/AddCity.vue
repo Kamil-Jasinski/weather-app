@@ -38,6 +38,18 @@
                     icon="heart"
                   />
                 </button>
+                <button
+                  @click="closeSearchedCity"
+                  name="Close searched city card"
+                  role="Close searched city card"
+                  class="__close-searched"
+                >
+                  <font-awesome-icon
+                    name="Close searched city icon"
+                    class="__close ico"
+                    icon="times"
+                  />
+                </button>
                 <div
                   class="__download-data"
                   @click.prevent="getCityForecast(selectedCityInput)"
@@ -97,11 +109,11 @@
           </div> -->
 
           <carousel
-            style="width: 90%"
+            style="width: 100%"
             v-if="savedForecasts.length > 0"
             :paginationEnabled="false"
             :centerMode="true"
-            :perPage="carouselSlidesNumber"
+            :perPage="3"
             :loop="true"
             :navigationEnabled="true"
             navigationNextLabel="<button class='carousel-nav-button'>></button>"
@@ -120,7 +132,7 @@
                     :src="'https://picsum.photos/150/200?random=' + index"
                     alt="city pictrue"
                   />
-                  <p @click.prevent="getCityForecast(city.name)">
+                  <p >
                     {{ city.name }}
                   </p>
 
@@ -171,6 +183,10 @@ export default class AddCity extends Vue {
   selectedCityInput = "";
   timer: any;
   glideInstance: any = null;
+
+  closeSearchedCity() {
+    this.selectedCityInput = '';
+  }
 
   shouldScaleCard(cardCityName: string): boolean {
     if (cardCityName === this.currentlySelectedCity) {
@@ -235,6 +251,7 @@ export default class AddCity extends Vue {
         this.$store.commit("SAVE_FORECAST", { forecast: objToSave });
       } else {
         console.log("The city is already saved.");
+        this.selectedCityInput = '';
       }
     }
   }
@@ -272,7 +289,7 @@ export default class AddCity extends Vue {
 
   getCityForecast(selectedCityName: string): void {
     clearTimeout(this.timer);
-    console.log(this.$store.getters.isLoggedIn);
+    
 
     let cityname = selectedCityName;
 
@@ -294,7 +311,7 @@ export default class AddCity extends Vue {
 
     // UPDATE forecast after 60sec if user is logged in
     if (this.$store.getters.isLoggedIn === true) {
-      console.log("Updating Forecast for: ", cityname);
+      
 
       this.timer = setTimeout(() => {
         this.getCityForecast(cityname);
@@ -401,13 +418,13 @@ $main-app-color-hover: #1a1e69;
 
     // Saved City cards
     .cards {
+      position: relative;
       display: flex;
       flex-direction: row;
       align-items: center;
       height: 100%;
       width: 100%;
-      // justify-content: center;
-      overflow: hidden;
+      max-height: min-content;
       .carousel-wrapper {
         display: flex;
         width: 100%;
@@ -434,22 +451,27 @@ $main-app-color-hover: #1a1e69;
         img {
           position: relative;
           z-index: 1;
-          width: auto;
-          height: 200px;
+          // width: auto;
+          // height: 200px;
+           max-width: 100%;
+    // max-height: 100%;
           border-top-left-radius: 10px;
           border-top-right-radius: 10px;
+           object-fit: contain;
         }
         .__wrapper {
           display: inline-block;
           width: auto;
           position: relative;
-          border-left: 1px solid hsla(237, 61%, 15%, 0.3);
           border-bottom: 1px solid hsla(237, 61%, 15%, 0.3);
           border-top-left-radius: 10px;
 
           &:hover {
             .actions {
-              display: block;
+              // display: block;
+              opacity: 1;
+              // visibility: 1;
+              
             }
           }
 
@@ -461,12 +483,14 @@ $main-app-color-hover: #1a1e69;
 
           .actions {
             position: absolute;
-            display: none;
+            // display: none;
+            opacity: 0;
+            // visibility: 0;
             top: 0;
             z-index: 2;
             width: 100%;
             height: 100%;
-            transition: background-color 0.3s ease-in-out;
+            transition: background-color 0.3s ease-in-out,  opacity .3s ease-in-out;
 
             &:hover {
               background-color: hsla(4, 80%, 96%, 0.3);
@@ -485,6 +509,7 @@ $main-app-color-hover: #1a1e69;
               pointer-events: auto;
               .ico {
                 font-size: 2rem;
+                transition: color .3s ease-in-out;
               }
               .__heart,
               .__heart-broken {
@@ -493,13 +518,19 @@ $main-app-color-hover: #1a1e69;
                   color: #eb4d4b;
                 }
               }
-              .__check {
-                color: #badc58;
-                &:hover {
-                  color: #6ab04c;
-                }
-              }
             }
+            .__close-searched{
+                left: auto;
+                right: 0!important;
+                 border-top-right-radius: 10px;
+                 border-top-left-radius: 0;
+                 .__close {
+                   color: #ff7979;
+                &:hover {
+                  color: #eb4d4b;
+                }
+                 }
+              }
 
             .__download-data {
               position: absolute;
@@ -517,16 +548,13 @@ $main-app-color-hover: #1a1e69;
       }
 
       .searched {
-        .city-card {
-          .__wrapper {
-            .actions {
-              &:hover {
-                // background-color: transparent !important;
-                cursor: default;
-              }
-            }
-          }
-        }
+       background: #fdeeed;
+        border-right: 1px solid $main-app-color;
+        padding: 40px 20px;
+
+        position: absolute;
+        left: -10px;
+        z-index: 10;
       }
 
       .scaled-card {

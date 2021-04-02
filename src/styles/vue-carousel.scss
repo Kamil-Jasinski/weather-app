@@ -1,0 +1,23 @@
+.VueCarousel-navigation-next,
+.VueCarousel-navigation-prev {
+  padding: 0 !important;
+  top: 50% !important;
+  transform: translate(0, -50%) !important;
+}
+
+.carousel-nav-button {
+  padding: 10px;
+  color: rgba(15, 17, 61, 1);
+  background-color: rgba(238, 83, 83, 0.388);
+  font-size: 1.5rem;
+  border: none;
+  outline: none;
+  cursor: pointer;
+  &:hover {
+    background-color: #ee5352b5;
+  }
+}
+
+.VueCarousel-inner{
+    align-items: center;
+}

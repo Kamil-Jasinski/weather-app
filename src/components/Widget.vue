@@ -118,9 +118,9 @@ export default class Widget extends Vue {
   }
 
   get currentCityDate(): string {
-    const unix_timestamp = 1549312452;
+    
 
-    const monthAndDay = new Date(unix_timestamp * 1000).toLocaleDateString(
+    const monthAndDay = new Date(this.currentCity.dt * 1000).toLocaleDateString(
       "en-EN",
       {
         year: "numeric",

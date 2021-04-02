@@ -9,3 +9,12 @@
     height: 100%;
   }
 }
+
+.vs__selected-options {
+  .vs__search {
+    padding: 5px;
+    &::placeholder {
+      color: rgb(211, 211, 211);
+    }
+  }
+}

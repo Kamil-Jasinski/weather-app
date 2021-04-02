@@ -32,6 +32,7 @@ import {
   faUser,
   faTint,
   faSearchLocation,
+  faTimes
 } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/vue-fontawesome";
 
@@ -44,7 +45,8 @@ library.add(
   faChevronLeft,
   faUser,
   faTint,
-  faSearchLocation
+  faSearchLocation,
+  faTimes
 );
 Vue.component("font-awesome-icon", FontAwesomeIcon);
 

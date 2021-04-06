@@ -1,9 +1,9 @@
 <script>
-import { Bar } from 'vue-chartjs';
+import { Bar } from "vue-chartjs";
 
 export default {
   extends: Bar,
-  props: ['chartData'],
+  props: ["chartData"],
   data() {
     return {
       datacollection: null,
@@ -14,11 +14,11 @@ export default {
             {
               ticks: {
                 beginAtZero: true,
-                fontColor: '#ffffff75',
+                fontColor: "#ffffff75",
               },
               gridLines: {
                 display: true,
-                color: '#ffffff25',
+                color: "#ffffff25",
               },
             },
           ],
@@ -26,7 +26,7 @@ export default {
             {
               ticks: {
                 beginAtZero: true,
-                fontColor: '#ffffff75',
+                fontColor: "#ffffff75",
               },
               gridLines: {
                 display: false,
@@ -37,7 +37,7 @@ export default {
         legend: {
           display: true,
           labels: {
-            fontColor: '#FFF',
+            fontColor: "#FFF",
           },
         },
         responsive: true,
@@ -67,11 +67,11 @@ export default {
         //Add single item (label) to labelsArray
         const label = el.dt;
         const options = {
-          weekday: 'long',
-          day: 'numeric',
+          weekday: "long",
+          day: "numeric",
         };
         const dayName = new Date(label * 1000).toLocaleDateString(
-          'en-US',
+          "en-US",
           options
         );
         labelsArray.push(dayName);
@@ -87,21 +87,21 @@ export default {
         datasets: [
           {
             barPercentage: 0.4,
-            label: 'Day Temperature',
-            backgroundColor: '#eb4d4b',
+            label: "Day Temperature",
+            backgroundColor: "#eb4d4b",
             borderWidth: 2,
-            borderColor: '#ff7979',
-            color: '#FFF',
+            borderColor: "#ff7979",
+            color: "#FFF",
             //Data to be represented on y-axis
             data: dayTempArray,
           },
           {
             barPercentage: 0.4,
             label: `Night Temperature`,
-            backgroundColor: '#4834d4',
+            backgroundColor: "#4834d4",
             borderWidth: 2,
-            borderColor: '#686de0',
-            color: '#FFF',
+            borderColor: "#686de0",
+            color: "#FFF",
             //Data to be represented on y-axis
             data: nightTempArray,
           },

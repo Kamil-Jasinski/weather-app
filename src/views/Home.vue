@@ -11,9 +11,8 @@
       :cityTimeZone="selectedCityName"
       :isDataReady="isDataReady"
     />
-    <Loader v-if="showLoader"/>
+    <Loader v-if="showLoader" />
     <div v-if="showLoader" class="overlay"></div>
-    <!-- <button @click="log">LOG HOME</button> -->
   </div>
 </template>
 
@@ -29,22 +28,22 @@ import Loader from "@/components/Loader.vue"; // @ is an alias to /src
     AddCity,
     ShortDetails,
     Widget,
-    Loader
+    Loader,
   },
 })
 export default class Home extends Vue {
-  get response() {
+  get response(): Record<string, any> {
     return this.$store.getters.currentData;
   }
-  get isDataReady() {
+  get isDataReady(): boolean {
     return this.$store.getters.isDataReady;
   }
 
   //For widget & widget
-  get selectedCityName() {
+  get selectedCityName(): string {
     return this.response.timezone;
   }
-  get widgetSelectedCityData() {
+  get widgetSelectedCityData(): Record<string, string> {
     return this.response.current;
   }
 
@@ -57,10 +56,6 @@ export default class Home extends Vue {
     }
 
     return response;
-  }
-
-  log(): void {
-    console.log(this.isDataReady);
   }
 
   get showLoader() {
@@ -87,7 +82,7 @@ export default class Home extends Vue {
   grid-template-columns: repeat(8, 1fr);
   grid-template-rows: repeat(12, 1fr);
 
-  .overlay{
+  .overlay {
     position: absolute;
     top: 0;
     left: 0;

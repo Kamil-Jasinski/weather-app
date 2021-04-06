@@ -20,6 +20,10 @@ export default class Logout extends Vue {
         // CLEAR ALERT TIMEOUT
         window.clearTimeout(this.logoutAlert);
 
+        // Clear user name
+
+        this.$store.commit("SET_USER_NAME", { userName: "" });
+
         // IS USER LOGGED IN ?
         this.$store.commit("CHANGE_IS_LOGGED_IN", { logged: false });
 

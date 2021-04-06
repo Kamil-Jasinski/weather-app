@@ -1,6 +1,9 @@
 <template>
   <div class="login-page">
-    <div v-if="isLoggedIn" class="__userName">Logged as: <span style="color: #eb4d4b; margin-left: 10px;"> {{ userName }}</span></div>
+    <div v-if="isLoggedIn" class="__userName">
+      Logged as:
+      <span style="color: #eb4d4b; margin-left: 10px;"> {{ userName }}</span>
+    </div>
     <div v-else class="__logout-notify">
       <h2>
         Hi, you need to be logged in to use this app.
@@ -16,7 +19,9 @@
     <span class="logged-in-menu" v-if="isLoggedIn">
       <Logout />
       <p style="color: #fff">Or</p>
-      <button><router-link to="/home">Back to App</router-link></button>
+      <button class="positive">
+        <router-link to="/home">Go to App</router-link>
+      </button>
     </span>
 
     <div v-if="showLoginAlert" :class="`log-info ${loginAlertClass}`">
@@ -31,7 +36,6 @@ import { Component, Vue } from "vue-property-decorator";
 import Login from "@/components/dashboard/Login.vue";
 import Logout from "@/components/dashboard/Logout.vue";
 import Register from "@/components/dashboard/Register.vue";
-import firebase from "firebase";
 
 @Component({
   components: {
@@ -43,7 +47,7 @@ import firebase from "firebase";
 export default class Dashboard extends Vue {
   selectedForm = "login";
 
-  private loginForm(form: string): void {
+  loginForm(form: string): void {
     this.selectedForm = form;
   }
 
@@ -63,15 +67,8 @@ export default class Dashboard extends Vue {
     return this.$store.getters.loginAlertClass;
   }
 
-  get userName(): string | null | undefined {
-    let name: string | null | undefined;
-    if (firebase.auth().currentUser !== null) {
-      name = firebase.auth().currentUser?.email;
-    } else {
-      name = "";
-    }
-
-    return name;
+  get userName() {
+    return this.$store.getters.userName;
   }
 }
 </script>
@@ -205,6 +202,14 @@ export default class Dashboard extends Vue {
       a {
         color: #fff;
       }
+    }
+  }
+
+  .positive {
+    background-color: #eb4d4b;
+    border-color: #fff;
+    a {
+      color: #fff;
     }
   }
 }

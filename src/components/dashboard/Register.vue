@@ -25,9 +25,13 @@ export default class Register extends Vue {
     firebase
       .auth()
       .createUserWithEmailAndPassword(this.email, this.password)
-      .then(() => {
+      .then((userCred) => {
         // CLEAR ALERT TIMEOUT
         window.clearTimeout(this.registerAlert);
+
+        // Set user name
+        const userName = userCred.user?.email;
+        this.$store.commit("SET_USER_NAME", { userName: userName });
 
         // IS USER LOGGED IN ?
         this.$store.commit("CHANGE_IS_LOGGED_IN", { logged: true });

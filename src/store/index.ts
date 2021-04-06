@@ -16,7 +16,8 @@ export default new Vuex.Store({
     showLoginAlert: false, // Should show alert in dashboard ?
     loginAlertContent: "", // Text content to alert in dashboard
     loginAlertClass: "", // Class for alert in dashboard (success, error)
-    showLoader: false
+    showLoader: false,
+    userName: "", //User Name
   },
   mutations: {
     CHANGE_DATA(state, payload) {
@@ -25,7 +26,7 @@ export default new Vuex.Store({
     CHANGE_DATA_READY(state, payload) {
       state.isDataReady = payload.ready;
     },
-    SAVE_FORECAST(state, payload) {
+    SAVE_FORECAST(state: any, payload) {
       const singleForecast = payload.forecast;
       state.savedForecast.unshift(singleForecast);
     },
@@ -56,12 +57,17 @@ export default new Vuex.Store({
     },
     SET_LOADER(state, payload) {
       const showLoader = payload.showLoader;
-      
+
       state.showLoader = showLoader;
+    },
+    SET_USER_NAME(state, payload) {
+      const userName: string = payload.userName;
+
+      state.userName = userName;
     },
   },
   actions: {
-    async getData({ commit }, { id, cityName, lat, lon }) {
+    async getData({ commit }, { cityName, lat, lon }) {
       commit("SET_LOADER", { showLoader: true });
       try {
         const response = await axios.get(
@@ -73,11 +79,13 @@ export default new Vuex.Store({
         commit("SET_LOADER", { showLoader: false });
       } catch (error) {
         throw new Error(error);
-        
       }
     },
     checkAuth({ commit }) {
       if (firebase.auth().currentUser) {
+        const userName = firebase.auth().currentUser?.email;
+
+        commit("SET_USER_NAME", { userName: userName });
         commit("CHANGE_IS_LOGGED_IN", { logged: true });
       } else {
         commit("CHANGE_IS_LOGGED_IN", { logged: false });
@@ -112,6 +120,9 @@ export default new Vuex.Store({
     },
     showLoader: (state) => {
       return state.showLoader;
+    },
+    userName: (state) => {
+      return state.userName;
     },
   },
 });

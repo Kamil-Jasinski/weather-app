@@ -25,9 +25,13 @@ export default class Login extends Vue {
     firebase
       .auth()
       .signInWithEmailAndPassword(this.email, this.password)
-      .then(() => {
+      .then((userCred) => {
         // CLEAR ALERT TIMEOUT
         window.clearTimeout(this.loginAlert);
+
+        // Set user name
+        const userName = userCred.user?.email;
+        this.$store.commit("SET_USER_NAME", { userName: userName });
 
         // IS USER LOGGED IN ?
         this.$store.commit("CHANGE_IS_LOGGED_IN", { logged: true });
@@ -46,7 +50,7 @@ export default class Login extends Vue {
             content: "",
             class: "",
           });
-          this.$router.push("/home");
+          // this.$router.push("/home");
         }, 3000);
       })
       .catch((error) => {

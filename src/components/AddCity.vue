@@ -1,7 +1,7 @@
 <template>
   <div class="addCity">
     <div class="forecast-wrapper">
-      <form class="add-city-form">
+      <!-- <form class="add-city-form">
         <label class="__label">
           <font-awesome-icon class="search-ico" icon="search-location" />
           <v-select
@@ -10,7 +10,13 @@
             v-model="selectedCityInput"
           ></v-select>
         </label>
-      </form>
+      </form> -->
+      <SearchBar
+        :selectedCityInput="selectedCityInput"
+        @change-input="changeInput"
+        @clear-input="shouldClearInput"
+        :clearInput="clearInput"
+      />
 
       <div class="cards">
         <!-- SEARCHED CARD -->
@@ -64,105 +70,16 @@
         </div>
 
         <!-- SAVED CARDS -->
-        <div v-if="savedForecasts.length > 0" class="carousel-wrapper">
-          <h2 class="forecast-title">
-            Saved Forecast:
-          </h2>
-
-          <!-- <div class="glide">
-            <div class="glide__track" data-glide-el="track">
-              <ul class="glide__slides">
-                <div
-                  v-for="(city, index) in savedForecasts"
-                  :key="city.id"
-                  :class="
-                    `city-card ${
-                      shouldScaleCard(city.name) ? ' scaled-card' : ''
-                    }`
-                  "
-                >
-                  <span class="__wrapper">
-                    <img
-                      :src="'https://picsum.photos/150/200?random=' + index"
-                      alt="city pictrue"
-                    />
-                    <p @click.prevent="getCityForecast(city.name)">
-                      {{ city.name }}
-                    </p>
-
-                    <div class="actions">
-                      <div
-                        class="__download-data"
-                        name="actions overlay to collect data"
-                        @click.prevent="getCityForecast(city.name)"
-                      ></div>
-
-                      <button name="remove" @click="removeFromFav(city.id)">
-                        <font-awesome-icon
-                          class="__heart-broken ico"
-                          icon="heart-broken"
-                        />
-                      </button>
-                    </div>
-                  </span>
-                </div>
-              </ul>
-            </div>
-          </div> -->
-
-          <carousel
-            style="width: 100%"
-            v-if="savedForecasts.length > 0"
-            :paginationEnabled="false"
-            :centerMode="true"
-            :perPage="3"
-            :loop="true"
-            :navigationEnabled="true"
-            navigationNextLabel="<button class='carousel-nav-button'>></button>"
-            navigationPrevLabel="<button class='carousel-nav-button'><</button>"
-          >
-            <slide v-for="(city, index) in savedForecasts" :key="city.id">
-              <div
-                :class="
-                  `city-card ${
-                    shouldScaleCard(city.name) ? ' scaled-card' : ''
-                  }`
-                "
-              >
-                <span class="__wrapper">
-                  <img
-                    :src="'https://picsum.photos/150/200?random=' + index"
-                    alt="city pictrue"
-                  />
-                  <p>
-                    {{ city.name }}
-                  </p>
-
-                  <div class="actions">
-                    <div
-                      class="__download-data"
-                      name="actions overlay to collect data"
-                      @click.prevent="getCityForecast(city.name)"
-                    ></div>
-
-                    <button name="remove" @click="removeFromFav(city.id)">
-                      <font-awesome-icon
-                        class="__heart-broken ico"
-                        icon="heart-broken"
-                      />
-                    </button>
-                  </div>
-                </span>
-              </div>
-            </slide>
-          </carousel>
-        </div>
+        <TheCarousel
+          :shouldScaleCard="shouldScaleCard"
+          :currentlySelectedCity="currentlySelectedCity"
+          :savedForecasts="savedForecasts"
+          :getCityForecast="getCityForecast"
+          :carouselClass="carouselClass"
+        />
 
         <!-- PLACEHOLDER -->
-        <span v-if="savedForecasts.length == 0" class="__placeholder">
-          <img src="@/assets/img/undraw_Add_files_re_v09g.svg" alt="" />
-          <p>Save forecasts for your favourites citys</p>
-        </span>
+        <Placeholder v-if="savedForecasts.length == 0" />
       </div>
     </div>
   </div>
@@ -170,34 +87,53 @@
 
 <script lang="ts">
 import { Component, Vue, Watch } from "vue-property-decorator";
-import { Carousel, Slide } from "vue-carousel";
+import TheCarousel from "@/components/addCity/TheCarousel.vue";
+import Placeholder from "@/components/addCity/Placeholder.vue";
+import SearchBar from "@/components/addCity/SearchBar.vue";
 import { gsap } from "gsap";
-
 import cityJson from "@/assets/json/city.list.json";
-import Glide from "@glidejs/glide";
 
 @Component({
   components: {
-    Carousel,
-    Slide,
+    TheCarousel,
+    Placeholder,
+    SearchBar,
   },
 })
 export default class AddCity extends Vue {
   selectedCityInput = "";
   timer: any;
-  glideInstance: any = null;
   searchedCityTL: any = gsap.timeline({ paused: true, reversed: true });
+  carouselClass = "";
+  clearInput = false;
 
-  mounted() {
+  mounted(): void {
     this.searchedCityTL.fromTo(
       this.$refs.searchedCity,
-      { xPercent: "-100" },
-      { xPercent: "0" }
+      { xPercent: "-100", display: "none", position: "absolute" },
+      { xPercent: "0", display: "flex" }
     );
   }
 
-  @Watch("selectedCityInput", { immediate: false, deep: false })
-  onSelectChange() {
+  // Emited function from search bar
+  shouldClearInput(clear: boolean): void {
+    this.clearInput = clear;
+  }
+  // Emited function from search bar
+  changeInput(inputValue: string): void {
+    this.selectedCityInput = inputValue;
+
+    if (inputValue !== "" && inputValue !== null) {
+      // console.log("addClass");
+      this.carouselClass = "small";
+    } else {
+      // console.log("remove class");
+      this.carouselClass = "";
+    }
+  }
+
+  @Watch("selectedCityInput", { immediate: false, deep: true })
+  onSelectChange(): void {
     // Trigger animation
     const input = this.selectedCityInput;
     if (input !== null && input !== "") {
@@ -209,8 +145,9 @@ export default class AddCity extends Vue {
     }
   }
 
-  clearSearchedCityInput() {
-    this.selectedCityInput = "";
+  clearSearchedCityInput(): void {
+    this.carouselClass = "";
+    this.clearInput = true;
   }
 
   shouldScaleCard(cardCityName: string): boolean {
@@ -225,18 +162,8 @@ export default class AddCity extends Vue {
     return this.$store.getters.currentlySelectedCity;
   }
 
-  get carouselSlidesNumber(): number {
-    let isSelected = 3;
-    if (this.selectedCityInput === "") {
-      isSelected = 3;
-    } else {
-      isSelected = 2;
-    }
-
-    return isSelected;
-  }
-
   saveCity(): void {
+    this.clearInput = true;
     //Get coords/id by city name
     const searchedCity: any = cityJson.find(
       (el) => el.name === this.selectedCityInput
@@ -281,35 +208,9 @@ export default class AddCity extends Vue {
     }
   }
 
-  removeFromFav(id: number): void {
-    // If array exists remove city array
-    if (localStorage.citys !== null) {
-      // GET array
-      let citys = JSON.parse(localStorage.getItem("citys") || "[]");
-      // Is obj in array?
-      let newArray = citys.filter((city: any) => city.id != id);
-
-      // UPDATE state&localStorage array
-      this.$store.commit("UPDATE_SAVED_FORECAST", { updatedArray: newArray });
-      localStorage.setItem("citys", JSON.stringify(newArray));
-    } //if-end
-  }
-
   get savedForecasts(): void {
     let citys = this.$store.getters.savedForecast;
     return citys;
-  }
-
-  get cityNames(): string[] {
-    let cityNamesArr: Array<string> = [];
-
-    //Get names from json
-    cityJson.forEach((el) => {
-      const cityName = el.name;
-      cityNamesArr.push(cityName);
-    });
-
-    return cityNamesArr;
   }
 
   getCityForecast(selectedCityName: string): void {
@@ -345,59 +246,13 @@ export default class AddCity extends Vue {
       console.log("NIE SPRAWDZAJ");
     }
   }
-
-  created(): void {
-    // If array exist
-    let citys = [];
-    if (localStorage.citys !== null) {
-      // GET array
-      citys = JSON.parse(localStorage.getItem("citys") || "[]");
-    }
-
-    this.$store.commit("INIT_SAVED_FORECAST", { forecastArray: citys });
-  }
-
-  // mounted() {
-  //   this.glideInstance = new Glide(".glide", {
-  //     type: "slider",
-  //     // startAt: 0,
-  //     perView: this.carouselSlidesNumber,
-  //   }).mount();
-  // }
-
-  // @Watch("savedForecasts") watchSavedForecasts() {
-  //   console.log(this.glideInstance);
-  // if(this.savedForecast)
-  //   this.glideInstance.update({
-
-  //   });
-  // }
-
-  // @Watch("selectedCityInput") perView() {
-  //   if (this.selectedCityInput === "") {
-  //     console.log("powinno być2");
-  //     this.glideInstance.update({
-  //       perView: 2,
-  //     });
-  //   } else {
-  //     console.log("powinno być2");
-  //     this.glideInstance.update({
-  //       perView: 3,
-  //     });
-  //   }
-  // }
-}
+} //class
 </script>
 
 <!-- Add "scoped" attribute to limit CSS to this component only -->
-<style lang="scss" scoped>
+<style lang="scss">
 $main-app-color: #0f113d;
 $main-app-color-hover: #1a1e69;
-// Required Core Stylesheet
-@import "node_modules/@glidejs/glide/src/assets/sass/glide.core";
-
-// Optional Theme Stylesheet
-@import "node_modules/@glidejs/glide/src/assets/sass/glide.theme";
 
 .addCity {
   grid-row: 1/7;
@@ -461,6 +316,11 @@ $main-app-color-hover: #1a1e69;
         -ms-user-select: none; /* Internet Explorer/Edge */
         user-select: none; /* Non-prefixed version, currently
                                   supported by Chrome, Edge, Opera and Firefox */
+      }
+
+      .small {
+        width: 65%;
+        margin-left: 34%;
       }
 
       .forecast-title {
@@ -575,14 +435,12 @@ $main-app-color-hover: #1a1e69;
         background: #fdeeed;
         border-right: 4px solid $main-app-color;
         padding: 10px 20px 10px 20px;
-        display: flex;
+        // display: flex;
         flex-direction: column;
         justify-content: center;
         height: 100%;
         max-height: 100%;
-
-        position: absolute;
-        // left: -10px;
+        width: 33%;
         z-index: 10;
       }
 

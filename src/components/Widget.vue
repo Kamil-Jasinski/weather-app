@@ -157,29 +157,44 @@ export default class Widget extends Vue {
     return today;
   }
 
-  mounted() {
+  mounted(): void {
     this.animateClouds();
   }
 
-  animateClouds() {
+  animateClouds(): void {
     gsap.fromTo(
       this.$refs.cl1,
       { x: "-200" },
-      { duration: this.rInt(12, 15), x: "550px", repeat: -1, delay: this.rInt(0,2) }
+      {
+        duration: this.rInt(13, 16),
+        x: "550px",
+        repeat: -1,
+        delay: this.rInt(0, 4),
+      }
     );
     gsap.fromTo(
       this.$refs.cl2,
       { x: "-200" },
-      { duration: this.rInt(12, 15), x: "550px", repeat: -1, delay: this.rInt(0,2) }
+      {
+        duration: this.rInt(13, 18),
+        x: "550px",
+        repeat: -1,
+        delay: this.rInt(0, 4),
+      }
     );
     gsap.fromTo(
       this.$refs.cl3,
       { x: "-200" },
-      { duration: this.rInt(14, 20), x: "550px", repeat: -1, delay: this.rInt(0,2) }
+      {
+        duration: this.rInt(15, 21),
+        x: "550px",
+        repeat: -1,
+        delay: this.rInt(0, 4),
+      }
     );
   }
 
-  rInt(min: number, max: number) {
+  rInt(min: number, max: number): number {
     //GET RANDOM INT
     min = Math.ceil(min);
     max = Math.floor(max);
@@ -224,7 +239,7 @@ $main-app-color: #0f113d;
     padding: 10px;
     right: 40px;
     top: 40px;
-    z-index: 2;
+    z-index: 6;
     transition: color 0.4s ease-in-out;
     &:hover {
       color: #eb4d4b;
@@ -352,11 +367,13 @@ $main-app-color: #0f113d;
     color: #fff;
     fill: #fff;
     .cl {
-      max-width: 200px;
+      max-width: 180px;
       position: absolute;
       left: 0;
       z-index: 2;
-      opacity: 0.3;
+      opacity: 0.05;
+      -webkit-filter: invert(100%); /* Safari/Chrome */
+      filter: invert(100%);
     }
     .cl1 {
       top: 20px;

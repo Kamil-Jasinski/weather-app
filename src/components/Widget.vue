@@ -1,8 +1,24 @@
 <template>
   <div class="widget" :style="`--mainWidgetColor:${mainWidgetColor}`">
+    <span class="bg-cloud">
+      <img
+        class="cl cl2"
+        ref="cl2"
+        src="@/assets/img/clouds/cloudx2.svg"
+        alt=""/>
+
+      <img
+        class="cl cl3"
+        ref="cl3"
+        src="@/assets/img/clouds/cloudx3.svg"
+        alt=""/>
+      <img class="cl cl1" ref="cl1" src="@/assets/img/clouds/cloud1.svg" alt=""
+    /></span>
+
     <router-link class="widget-link" to="/"
       ><font-awesome-icon class="__user-ico" icon="user"
     /></router-link>
+
     <div v-if="isDataReady" class="weather-today">
       <div class="__day">
         <span class="weather-day-icon">
@@ -48,6 +64,7 @@
 <script lang="ts">
 import { Component, Vue, Prop } from "vue-property-decorator";
 import TheChart from "@/components/TheChart.vue";
+import { gsap } from "gsap";
 
 @Component({
   components: {
@@ -59,7 +76,6 @@ export default class Widget extends Vue {
   @Prop() isDataReady: any; //Check is data is ready to show
   @Prop() cityTimeZone: any; //Here will be one timezone eg. Europe/London - currently selected
   @Prop() currCity: any; //Here will be ONE/CURRENT/TODAY city object - currently selected
-
   mainWidgetColor = "#0f113d";
 
   get currentlySelectedCityName(): string {
@@ -118,9 +134,7 @@ export default class Widget extends Vue {
   }
 
   get currentCityDate(): string {
-    const unix_timestamp = 1549312452;
-
-    const monthAndDay = new Date(unix_timestamp * 1000).toLocaleDateString(
+    const monthAndDay = new Date(this.currentCity.dt * 1000).toLocaleDateString(
       "en-EN",
       {
         year: "numeric",
@@ -143,8 +157,33 @@ export default class Widget extends Vue {
     return today;
   }
 
-  log(): void {
-    console.log(this.weeklyData);
+  mounted() {
+    this.animateClouds();
+  }
+
+  animateClouds() {
+    gsap.fromTo(
+      this.$refs.cl1,
+      { x: "-200" },
+      { duration: this.rInt(12, 15), x: "550px", repeat: -1, delay: this.rInt(0,2) }
+    );
+    gsap.fromTo(
+      this.$refs.cl2,
+      { x: "-200" },
+      { duration: this.rInt(12, 15), x: "550px", repeat: -1, delay: this.rInt(0,2) }
+    );
+    gsap.fromTo(
+      this.$refs.cl3,
+      { x: "-200" },
+      { duration: this.rInt(14, 20), x: "550px", repeat: -1, delay: this.rInt(0,2) }
+    );
+  }
+
+  rInt(min: number, max: number) {
+    //GET RANDOM INT
+    min = Math.ceil(min);
+    max = Math.floor(max);
+    return Math.floor(Math.random() * (max - min)) + min;
   }
 } //class
 </script>
@@ -161,6 +200,23 @@ $main-app-color: #0f113d;
   grid-row: 1/-1;
   width: 100%;
   position: relative;
+
+  overflow: hidden;
+
+  background: rgb(15, 17, 61);
+  background: linear-gradient(
+    0deg,
+    $main-widget-color 0%,
+    $main-widget-color-top 45%
+  );
+  color: #fff;
+
+  display: grid;
+  grid-template-rows: 3fr 2fr;
+  grid-template-areas:
+    "wToday"
+    "wChart";
+
   .widget-link {
     position: absolute;
     text-decoration: none;
@@ -178,23 +234,10 @@ $main-app-color: #0f113d;
     }
   }
 
-  background: rgb(15, 17, 61);
-  background: linear-gradient(
-    0deg,
-    $main-widget-color 0%,
-    $main-widget-color-top 45%
-  );
-  color: #fff;
-
-  display: grid;
-  grid-template-rows: 3fr 2fr;
-  grid-template-areas:
-    "wToday"
-    "wChart";
-
   .weather-today {
     grid-area: wToday;
-
+    position: relative;
+    z-index: 5;
     display: flex;
     flex-direction: column;
     justify-content: center;
@@ -271,6 +314,8 @@ $main-app-color: #0f113d;
 
   .weatcher-chart {
     grid-area: wChart;
+    position: relative;
+    z-index: 5;
     width: 100%;
     margin: auto auto;
   }
@@ -300,6 +345,27 @@ $main-app-color: #0f113d;
       bottom: 0;
       width: 100%;
       justify-self: flex-end;
+    }
+  }
+
+  .bg-cloud {
+    color: #fff;
+    fill: #fff;
+    .cl {
+      max-width: 200px;
+      position: absolute;
+      left: 0;
+      z-index: 2;
+      opacity: 0.3;
+    }
+    .cl1 {
+      top: 20px;
+    }
+    .cl2 {
+      top: 40%;
+    }
+    .cl3 {
+      top: 230px;
     }
   }
 }

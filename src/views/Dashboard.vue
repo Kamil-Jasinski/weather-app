@@ -1,6 +1,6 @@
 <template>
   <div class="login-page">
-    <div v-if="isLoggedIn" class="__userName">Logged as: {{ userName }}</div>
+    <div v-if="isLoggedIn" class="__userName">Logged as: <span style="color: #eb4d4b; margin-left: 10px;"> {{ userName }}</span></div>
     <div v-else class="__logout-notify">
       <h2>
         Hi, you need to be logged in to use this app.

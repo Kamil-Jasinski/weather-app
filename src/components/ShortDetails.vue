@@ -9,7 +9,7 @@
         <div class="ico">
           Clouds
         </div>
-        <div class="temp">Day &deg;C</div>
+        <div class="temp">Pressure</div>
       </li>
 
       <li
@@ -34,7 +34,7 @@
           </span>
           <img />
         </div>
-        <div class="temp">{{ weekDayTemp(index) }}&deg;C</div>
+        <div class="temp">{{ weekDayPressure(index) }}</div>
       </li>
     </ul>
     <div v-if="!isDataReady" class="__placeholder">
@@ -80,10 +80,10 @@ export default class ShortDetails extends Vue {
     return dayId;
   }
 
-  weekDayTemp(index: number): number {
-    const dayTemp = this.week[index].temp.day;
+  weekDayPressure(index: number): string {
+    const dayPressure = this.week[index].pressure + " hPa";
 
-    return dayTemp;
+    return dayPressure;
   }
 
   weekDayHumidity(index: number): string {

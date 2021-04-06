@@ -16,6 +16,7 @@ export default new Vuex.Store({
     showLoginAlert: false, // Should show alert in dashboard ?
     loginAlertContent: "", // Text content to alert in dashboard
     loginAlertClass: "", // Class for alert in dashboard (success, error)
+    showLoader: false
   },
   mutations: {
     CHANGE_DATA(state, payload) {
@@ -53,9 +54,15 @@ export default new Vuex.Store({
       state.loginAlertContent = alertContent;
       state.loginAlertClass = alertClass;
     },
+    SET_LOADER(state, payload) {
+      const showLoader = payload.showLoader;
+      
+      state.showLoader = showLoader;
+    },
   },
   actions: {
     async getData({ commit }, { id, cityName, lat, lon }) {
+      commit("SET_LOADER", { showLoader: true });
       try {
         const response = await axios.get(
           `https://api.openweathermap.org/data/2.5/onecall?lat=${lat}&lon=${lon}&exclude=minutely,alerts&appid=${this.state.apiKey}&units=metric`
@@ -63,8 +70,10 @@ export default new Vuex.Store({
         commit("CHANGE_DATA", { data: response.data });
         commit("CHANGE_DATA_READY", { ready: true });
         commit("SET_CURR_SEL_CITY", { selCity: cityName });
+        commit("SET_LOADER", { showLoader: false });
       } catch (error) {
         throw new Error(error);
+        
       }
     },
     checkAuth({ commit }) {
@@ -100,6 +109,9 @@ export default new Vuex.Store({
     },
     loginAlertClass: (state) => {
       return state.loginAlertClass;
+    },
+    showLoader: (state) => {
+      return state.showLoader;
     },
   },
 });

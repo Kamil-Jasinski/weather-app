@@ -1,0 +1,30 @@
+$carouselButtonColor: #686de0a8;
+$carouselButtonHoverColor: #686de0;
+$carouselButtonFontColor: #fff;
+
+
+
+.VueCarousel-navigation-next,
+.VueCarousel-navigation-prev {
+  padding: 0 !important;
+  top: 50% !important;
+  transform: translate(0, -50%) !important;
+}
+
+.carousel-nav-button {
+  padding: 10px;
+  color: $carouselButtonFontColor;
+  background-color: $carouselButtonColor;
+  font-size: 1.5rem;
+  border: none;
+  outline: none;
+  cursor: pointer;
+  transition: background-color .3s ease-in-out;
+  &:hover {
+    background-color: $carouselButtonHoverColor;
+  }
+}
+
+.VueCarousel-inner{
+    align-items: center;
+}
